@@ -1,4 +1,4 @@
-# Project: Fraktl - High-Performance URL Shortener
+# Fraktl: High-Performance URL Shortener
 
 ## Features
 
