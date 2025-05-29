@@ -5,7 +5,5 @@ POST http://localhost:8090/api/v1/short-urls
 Content-Type: application/json
 
 {
-  "longUrl": "localhost:8090/api/v1/url-- some long url",
-  "apiKey": "fdfgjsxxuu",
-  "customUrlAlias": "base.url"
+  "longUrl": "localhost:8090/api/v1/url-- some long url"
 }
