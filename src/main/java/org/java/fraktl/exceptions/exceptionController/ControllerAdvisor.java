@@ -1,12 +1,12 @@
 package org.java.fraktl.exceptions.exceptionController;
 
-import static org.java.fraktl.response.ResponseStatus.FAILURE;
+import static org.java.fraktl.model.response.ResponseStatus.FAILURE;
 
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.java.fraktl.exceptions.errorModel.ApiError;
 import org.java.fraktl.exceptions.errorModel.ApiSubError;
-import org.java.fraktl.response.ApiResponse;
+import org.java.fraktl.model.response.ApiResponse;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;

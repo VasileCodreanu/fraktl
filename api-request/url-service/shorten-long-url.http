@@ -1,9 +1,9 @@
 
-### GET short url from provided long url
+### get short url from long url
 
 POST http://localhost:8090/api/v1/short-urls
 Content-Type: application/json
 
 {
-  "longUrl": "localhost:8090/api/v1/url-- some long url"
+  "originalUrl": "localhost:8090/api/v1/url-- some long url"
 }

@@ -1,4 +1,4 @@
-package org.java.fraktl.response.long_url;
+package org.java.fraktl.model.response.long_url;
 
 
 public record LongUrlResponse(

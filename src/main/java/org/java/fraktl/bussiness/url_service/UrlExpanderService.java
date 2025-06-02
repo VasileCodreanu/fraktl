@@ -4,20 +4,14 @@ package org.java.fraktl.bussiness.url_service;
 import static org.java.fraktl.bussiness.url_service.UrlConstants.BASE_URL;
 import static org.java.fraktl.bussiness.url_service.UrlConstants.CHAR_SET;
 
-import java.util.concurrent.ConcurrentMap;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UrlExpanderService {
 
-  private final ConcurrentMap<Long, String> shortToLongMap;
-
-  public UrlExpanderService(ConcurrentMap<Long, String> shortToLongMap) {
-    this.shortToLongMap = shortToLongMap;
-  }
-
-  public String expand(String shortUrl) {
+  public long expand(String shortUrl) {
     String code = shortUrl.replace(BASE_URL, "");
-    long id = base62ToBase10(code);
-    return shortToLongMap.get(id);
+    return base62ToBase10(code);
   }
 
   private long base62ToBase10(String encoded) {

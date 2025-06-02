@@ -53,7 +53,6 @@ logs/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
@@ -178,7 +177,6 @@ misc/services/camel/de-metas-camel-shipping/tmp/
 
 # Build directories
 /target/
-/build/
 
 # OS files
 Thumbs.db
@@ -198,6 +196,7 @@ build/
 # Environment files
 .env
 *.env
+env.properties
 
 # Database files
 *.h2.db

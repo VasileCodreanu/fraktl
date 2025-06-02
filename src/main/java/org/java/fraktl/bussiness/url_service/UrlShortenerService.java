@@ -4,29 +4,22 @@ import static org.java.fraktl.bussiness.url_service.UrlConstants.BASE_URL;
 import static org.java.fraktl.bussiness.url_service.UrlConstants.CHAR_SET;
 import static org.java.fraktl.bussiness.url_service.UrlConstants.SHORT_URL_LENGTH;
 
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UrlShortenerService {
 
-  private final ConcurrentMap<String, Long> longToShortMap;
-  private final ConcurrentMap<Long, String> shortToLongMap;
   private final AtomicLong counter;
 
-  public UrlShortenerService(
-      ConcurrentMap<String, Long> longToShortMap,
-      ConcurrentMap<Long, String> shortToLongMap,
-      AtomicLong counter) {
-    this.longToShortMap = longToShortMap;
-    this.shortToLongMap = shortToLongMap;
+  public UrlShortenerService(AtomicLong counter) {
     this.counter = counter;
   }
 
-  public String createShortUrl(String longUrl) {
-    long id = counter.getAndIncrement();
-    longToShortMap.put(longUrl, id);
-    shortToLongMap.put(id, longUrl);
+  public String createShortUrl() {
+    long id  = counter.getAndIncrement();
     String shortCode = base10ToBase62(id);
+
     return BASE_URL + shortCode;
   }
 

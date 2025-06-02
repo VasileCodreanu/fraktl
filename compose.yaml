@@ -1,0 +1,29 @@
+
+services:
+  db:
+    image: 'postgres:17'
+    container_name: url-shortener-db
+    restart: always
+    tty: true
+    stdin_open: true
+    shm_size: 128mb
+    environment:
+      - 'POSTGRES_USER=${DB_USER}'
+      - 'POSTGRES_PASSWORD=${DB_PASSWORD}'
+      - 'POSTGRES_DB=${DB_NAME}'
+      - 'PGDATA=/var/lib/postgresql/data/pgdata'  #Tells Postgres where to store DB files in Docker
+    env_file:
+      - .env
+    volumes:
+      - pg-data:/var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    ports:
+      - "${DB_LOCAL_PORT}:${DB_CONTAINER_PORT}"
+volumes:
+  pg-data:
+    driver: local

@@ -1,5 +1,4 @@
 
-### GET long-url by supplying short-url
+### GET long-url by supplying short-url parameter
 
 GET http://localhost:8090/api/v1/short-urls/hBxM5A4
-

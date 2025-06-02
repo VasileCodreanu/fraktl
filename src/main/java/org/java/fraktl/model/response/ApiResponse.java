@@ -1,4 +1,4 @@
-package org.java.fraktl.response;
+package org.java.fraktl.model.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
