@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import lombok.RequiredArgsConstructor;
 import org.java.fraktl.bussiness.UrlService;
 import org.java.fraktl.bussiness.repository.UrlRepository;
+import org.java.fraktl.exceptions.errorModel.customExceptions.ResourceNotFoundException;
 import org.java.fraktl.model.entity.UrlMapping;
 import org.java.fraktl.model.response.short_url.ShortenUrlRequest;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,9 @@ public class BasicUrlService implements UrlService {
         long id = expanderService.expand(shortUrl);
 
         //get from DB long url by id
-        UrlMapping urlMapping = urlRepository.findById(id).get();
+        UrlMapping urlMapping = urlRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException(
+                String.format("Resource with short-url equal to: '%s' is not present.", shortUrl)));
 
         return urlMapping.getOriginalUrl();
     }
