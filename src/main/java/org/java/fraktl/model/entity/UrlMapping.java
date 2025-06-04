@@ -2,8 +2,11 @@ package org.java.fraktl.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.Getter;
@@ -18,6 +21,12 @@ import lombok.Setter;
 public class UrlMapping {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "url_seq")
+    @SequenceGenerator(
+        name = "url_seq",
+        sequenceName = "url_mapping_sequence",
+        allocationSize = 1
+    )
     private Long id;
 
     @Column(name = "short_url", nullable = false, unique = true)

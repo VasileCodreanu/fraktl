@@ -4,22 +4,13 @@ import static org.java.fraktl.bussiness.url_service.UrlConstants.BASE_URL;
 import static org.java.fraktl.bussiness.url_service.UrlConstants.CHAR_SET;
 import static org.java.fraktl.bussiness.url_service.UrlConstants.SHORT_URL_LENGTH;
 
-import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UrlShortenerService {
 
-  private final AtomicLong counter;
-
-  public UrlShortenerService(AtomicLong counter) {
-    this.counter = counter;
-  }
-
-  public String createShortUrl() {
-    long id  = counter.getAndIncrement();
+  public String createShortUrl(Long id) {
     String shortCode = base10ToBase62(id);
-
     return BASE_URL + shortCode;
   }
 
