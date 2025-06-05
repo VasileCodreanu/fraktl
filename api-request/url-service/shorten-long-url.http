@@ -1,9 +1,11 @@
 
-### get short url from long url
+### obtain short url from long url
 
 POST http://localhost:8090/api/v1/short-urls
 Content-Type: application/json
 
 {
-  "originalUrl": "localhost:8090/api/v1/url-- some long url"
+  "originalUrl": "https://medium.com/@sandeep4.verma/system-design-scalable-url-shortener-service-like-tinyurl-106f30f23a82"
 }
+
+###
