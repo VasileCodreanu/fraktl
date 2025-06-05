@@ -195,13 +195,11 @@ build/
 
 # Environment files
 .env
-*.env
 env.properties
 
 # Database files
 *.h2.db
 *.mv.db
-*.sql
 
 # Test reports
 /test-output/

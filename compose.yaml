@@ -1,7 +1,7 @@
 
 services:
   db:
-    image: 'postgres:17'
+    build: .
     container_name: url-shortener-db
     restart: always
     tty: true
