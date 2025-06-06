@@ -23,6 +23,7 @@
 #### 1. Prerequisites
 - Ensure Docker is installed and running on your machine.
 - Rename the provided file `env.properties.example` to `env.properties`, and configure the environment variables according to your system setup.
+- Rename the provided file `.env.example` to `.env`, and configure the environment variables for docker according to your system setup.
 
 #### 2. Start PostgreSQL with Docker
 - Run the following command to start the PostgreSQL database using Docker Compose:
