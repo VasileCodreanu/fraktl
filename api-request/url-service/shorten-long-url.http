@@ -1,5 +1,5 @@
 
-### obtain short url from long url
+###
 
 POST http://localhost:8090/api/v1/short-urls
 Content-Type: application/json

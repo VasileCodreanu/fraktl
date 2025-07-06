@@ -1,7 +1,5 @@
 
-### redirect small url to long url
-# Example of how to use the short URL.
-# For better experience you can paste this into your browser to test the redirect:
+###
 
 GET http://localhost:8090/hBxM5A4
 
