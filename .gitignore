@@ -1,5 +1,5 @@
 # Sensitive Files
-#*.env
+*.env
 *.key
 *.pem
 certs/
@@ -194,8 +194,8 @@ build/
 .spring-boot-devtools.properties
 
 # Environment files
-env.example
-env.properties.example
+.env
+env.properties
 
 # Database files
 *.h2.db
