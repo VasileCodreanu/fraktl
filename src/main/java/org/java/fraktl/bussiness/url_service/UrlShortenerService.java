@@ -10,6 +10,10 @@ import org.springframework.stereotype.Service;
 public class UrlShortenerService {
 
   public String createShortUrl(Long id) {
+    if (id == null || id < 100000000000L) {
+      throw new IllegalArgumentException("ID must be greater than 100000000000");
+    }
+
     String shortCode = base10ToBase62(id);
     return BASE_URL + shortCode;
   }
