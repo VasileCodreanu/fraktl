@@ -2,7 +2,7 @@ package org.java.fraktl.controller;
 
 
 import static org.java.fraktl.model.response.ResponseStatus.SUCCESS;
-import static org.springframework.http.HttpStatus.FOUND;
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -33,16 +33,16 @@ public class UrlController {
   private final UrlService urlService;
 
   @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-  public ResponseEntity<ApiResponse> shortenUrl(@Valid @RequestBody ShortenUrlRequest shortenUrlRequest) {
+  public ResponseEntity<ApiResponse<ShortUrlResponse>> shortenUrl(@Valid @RequestBody ShortenUrlRequest shortenUrlRequest) {
     String shortUrl = urlService.shortenUrl(shortenUrlRequest);
 
-    return new ResponseEntity<>(new ApiResponse(SUCCESS, new ShortUrlResponse(shortUrl)), FOUND);
+    return new ResponseEntity<>(new ApiResponse<>(SUCCESS, new ShortUrlResponse(shortUrl)), CREATED);
   }
 
   @GetMapping(value = "/{shortUrl}", produces = APPLICATION_JSON_VALUE)
-  public ResponseEntity<ApiResponse> expandShortUrl(@NotBlank @Size(min=7, max=7) @PathVariable String shortUrl) {
+  public ResponseEntity<ApiResponse<LongUrlResponse>> expandShortUrl(@NotBlank @Size(min=7, max=7) @PathVariable("shortUrl") String shortUrl) {
     String longUrl = urlService.expandUrl(shortUrl);
 
-    return new ResponseEntity<>(new ApiResponse(SUCCESS, new LongUrlResponse(longUrl)), OK);
+    return new ResponseEntity<>(new ApiResponse<>(SUCCESS, new LongUrlResponse(longUrl)), OK);
   }
 }
