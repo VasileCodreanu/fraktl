@@ -1,4 +1,4 @@
-<configuration debug="true">
+<configuration debug="true" scan="true" scanPeriod="300 seconds">
     <property name="LOG_PATH" value="logs" />
     <property name="LOG_FILE_NAME" value="application" />
 
@@ -37,10 +37,18 @@
 
     <appender name="ASYNC_CONSOLE" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="CONSOLE"/>
+        <queueSize>10000</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <includeCallerData>false</includeCallerData>
+        <neverBlock>false</neverBlock>
     </appender>
 
     <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
         <appender-ref ref="FILE"/>
+        <queueSize>10000</queueSize>
+        <discardingThreshold>0</discardingThreshold>
+        <includeCallerData>false</includeCallerData>
+        <neverBlock>false</neverBlock>
     </appender>
 
     <root level="INFO">
