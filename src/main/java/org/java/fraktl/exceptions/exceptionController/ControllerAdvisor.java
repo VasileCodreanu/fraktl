@@ -28,10 +28,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 
-
     @ExceptionHandler(ResourceNotFoundException.class)
     protected ResponseEntity<Object> handleNoSuchElement(ResourceNotFoundException ex){
-      log.error("ResourceNotFoundException: {}", ex.getMessage());
+      log.warn("Resource not found: {}", ex.getMessage(), ex);
 
         ApiError apiError = ApiError.builder()
             .status(NOT_FOUND.value())
@@ -46,7 +45,7 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     protected ResponseEntity<Object> handleNConstraintViolation(ConstraintViolationException ex){
 
-      log.error("ConstraintViolationException: {}", ex.getMessage());
+      log.warn("Constraint Violation Exception: {}", ex.getMessage(), ex);
 
         ApiError apiError = ApiError.builder()
             .status(BAD_REQUEST.value())
@@ -65,7 +64,7 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         HttpStatusCode status,
         WebRequest request) {
 
-      log.error("MethodArgumentNotValidException: {}", ex.getMessage());
+      log.warn("Method Argument Validation error: {}", ex.getMessage(), ex);
 
         List<ApiSubError> subErrors = ex.getBindingResult().getFieldErrors()
             .stream()
@@ -87,9 +86,24 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         return buildResponseEntity(apiError, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
+    @ExceptionHandler(Exception.class)
+    protected ResponseEntity<Object> handleAllExceptions(Exception ex) {
+
+      log.error("Internal Server Error: {}", ex.getMessage(), ex);
+
+      ApiError apiError = ApiError.builder()
+          .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+          .message("An unexpected error occurred.")
+          .debugMessage(ex.getMessage())
+          .subErrors(null)
+          .build();
+
+      return buildResponseEntity(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError, HttpStatus status) {
 
-        ApiResponse apiResponse = new ApiResponse(FAILURE, apiError);
+        ApiResponse<ApiError> apiResponse = new ApiResponse<>(FAILURE, apiError);
         return new ResponseEntity<>(apiResponse, status);
     }
 }
