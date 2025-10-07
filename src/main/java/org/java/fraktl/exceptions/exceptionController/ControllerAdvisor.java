@@ -30,6 +30,7 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     protected ResponseEntity<Object> handleNoSuchElement(ResourceNotFoundException ex){
+
       log.warn("Resource not found: {}", ex.getMessage(), ex);
 
         ApiError apiError = ApiError.builder()

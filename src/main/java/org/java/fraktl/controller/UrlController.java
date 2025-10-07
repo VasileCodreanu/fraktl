@@ -33,16 +33,24 @@ public class UrlController {
   private final UrlService urlService;
 
   @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-  public ResponseEntity<ApiResponse<ShortUrlResponse>> shortenUrl(@Valid @RequestBody ShortenUrlRequest shortenUrlRequest) {
-    String shortUrl = urlService.shortenUrl(shortenUrlRequest);
+  public ResponseEntity<ApiResponse<ShortUrlResponse>> shortenUrl(
+      @Valid @RequestBody ShortenUrlRequest shortenUrlRequest) {
 
-    return new ResponseEntity<>(new ApiResponse<>(SUCCESS, new ShortUrlResponse(shortUrl)), CREATED);
+    String shortUrl = urlService.shortenUrl(shortenUrlRequest);
+    ShortUrlResponse responseBody = new ShortUrlResponse(shortUrl);
+    ApiResponse<ShortUrlResponse> apiResponse = new ApiResponse<>(SUCCESS, responseBody);
+
+    return new ResponseEntity<>(apiResponse, CREATED);
   }
 
   @GetMapping(value = "/{shortUrl}", produces = APPLICATION_JSON_VALUE)
-  public ResponseEntity<ApiResponse<LongUrlResponse>> expandShortUrl(@NotBlank @Size(min=7, max=7) @PathVariable("shortUrl") String shortUrl) {
-    String longUrl = urlService.expandUrl(shortUrl);
+  public ResponseEntity<ApiResponse<LongUrlResponse>> expandShortUrl(
+      @NotBlank @Size(min=7, max=7) @PathVariable("shortUrl") String shortUrl) {
 
-    return new ResponseEntity<>(new ApiResponse<>(SUCCESS, new LongUrlResponse(longUrl)), OK);
+    String longUrl = urlService.expandUrl(shortUrl);
+    LongUrlResponse responseBody = new LongUrlResponse(longUrl);
+    ApiResponse<LongUrlResponse> apiResponse = new ApiResponse<>(SUCCESS, responseBody);
+
+    return new ResponseEntity<>(apiResponse, OK);
   }
 }
