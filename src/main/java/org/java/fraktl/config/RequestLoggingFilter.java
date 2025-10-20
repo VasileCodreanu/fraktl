@@ -1,6 +1,5 @@
 package org.java.fraktl.config;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,16 +7,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import net.logstash.logback.argument.StructuredArguments;
+import java.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
@@ -26,122 +22,212 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 @Component
 public class RequestLoggingFilter extends OncePerRequestFilter {
 
-  private final ObjectMapper objectMapper;
   private static final Logger log = LoggerFactory.getLogger(RequestLoggingFilter.class);
-  private static final String X_CORRELATION_ID = "X-Correlation-Id";
+  private static final String TRACE_ID = "trace.id";
+  private static final String CORRELATION_ID = "correlation.id";
+  private static final String HTTP = "http";
+  private static final String CLIENT = "client";
+  private static final String EVENT = "event";
+  private static final String USER_ID = "user.id";
 
-  public RequestLoggingFilter(ObjectMapper objectMapper) {
+  private final ObjectMapper objectMapper;
+  private final String apiPrefix;
+
+  public RequestLoggingFilter(
+          ObjectMapper objectMapper,
+          @Value("${api.prefix.v1}")String apiPrefix) {
     this.objectMapper = objectMapper;
+    this.apiPrefix = apiPrefix;
   }
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-      throws ServletException, IOException {
-    String correlationId = Optional
-        .ofNullable(request.getHeader(X_CORRELATION_ID))
-        .orElse(UUID.randomUUID().toString());
+          throws ServletException, IOException {
 
-    MDC.put(X_CORRELATION_ID, correlationId);
-    response.setHeader(X_CORRELATION_ID, correlationId);
+    String traceId = UUID.randomUUID().toString().replace("-", "");
+    String correlationId = Optional.ofNullable(
+            request.getHeader("X-Correlation-Id"))
+            .orElse(UUID.randomUUID().toString());
+    MDC.put(TRACE_ID, traceId);
+    MDC.put(CORRELATION_ID, correlationId);
 
     ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(request);
     ContentCachingResponseWrapper wrappedResponse = new ContentCachingResponseWrapper(response);
 
     long startTime = System.currentTimeMillis();
+    Throwable exception = null;
+
     try {
       filterChain.doFilter(wrappedRequest, wrappedResponse);
+    } catch (Exception e) {
+      exception = e;
+      throw e;
     } finally {
-      long duration = System.currentTimeMillis() - startTime;
-      logRequestDetails(wrappedRequest, wrappedResponse, duration);
+      long durationMs = System.currentTimeMillis() - startTime;
+
+      try {
+        logRequestDetails(wrappedRequest, wrappedResponse, durationMs, exception);
+      } catch (Exception e) {
+        log.error("Failed to log request details", e);
+      }
+
       wrappedResponse.copyBodyToResponse();
       MDC.clear();
     }
   }
 
-  private void logRequestDetails(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response, long duration) {
-    String uri   = request.getRequestURI();
+  private void logRequestDetails(
+          ContentCachingRequestWrapper request,
+          ContentCachingResponseWrapper response,
+          long durationMs,
+          Throwable exception) {
+    String uri = request.getRequestURI();
+    String method = request.getMethod();
+    int status = response.getStatus();
+    String shortUrlsPath = apiPrefix + "/short-urls";
+
+    if (uri.contains("/health") || uri.contains("/actuator")) {
+      return; // Skip logging
+    }
+
+    boolean isCreateAction = false;
+    boolean isGetAction = false;
+    boolean isRedirectAction = false;
+    if (HttpMethod.GET.matches(method)) {
+      if (!uri.startsWith(apiPrefix)) {
+        isRedirectAction = true;
+      } else if (uri.contains(shortUrlsPath)) {
+        isGetAction = true;
+      }
+    }else if (uri.contains(shortUrlsPath) && HttpMethod.POST.matches(method)) {
+      isCreateAction = true;
+    }
+
+    Map<String, Object> event = new LinkedHashMap<>();
+    event.put("category", "web");
+    event.put("type", isCreateAction ? "creation" : "access");
+    event.put("action", determineAction(request, shortUrlsPath));
+    event.put("outcome", exception != null ? "failure" : (status < 400 ? "success" : "failure"));
+    event.put("duration", durationMs);
+
+    Map<String, Object> client = new LinkedHashMap<>();
+    client.put("ip", getClientIpAddress(request));
+    client.put("user_agent", request.getHeader("User-Agent"));
+
+    String shortCode = isGetAction || isRedirectAction ? (uri.substring(uri.lastIndexOf('/') + 1)) : "N/A";
     String query = request.getQueryString() != null ? "?" + request.getQueryString() : "";
-    int status   = response.getStatus();
+    Map<String, Object> http = buildHttpDetails(request, response, uri, query, shortCode, status);
 
-    //Request map
-    Map<String, Object> requestMap = new HashMap<>();
+    log.atLevel(determineLevel(status))
+            .setMessage(
+                    isCreateAction ? "Short URL created" :
+                    isGetAction ? "Short URL get" :
+                    isRedirectAction ? "Short URL redirected" :
+                            "HTTP request processed")
+            .addKeyValue(EVENT, event)
+            .addKeyValue(CLIENT, client)
+            .addKeyValue(USER_ID, "user21")
+            .addKeyValue(HTTP, http)
+            .log();
+  }
+
+  private Map<String, Object> buildHttpDetails(
+          ContentCachingRequestWrapper request, ContentCachingResponseWrapper response,
+          String uri, String query, String shortCode, int status) {
+
+    Map<String, Object> requestMap = new LinkedHashMap<>();
     requestMap.put("method", request.getMethod());
+    requestMap.put("referrer", request.getHeader("Referer"));
     requestMap.put("url", uri + query);
-    requestMap.put("clientIp", getClientIpAddress(request));
-    requestMap.put("userAgent", request.getHeader("User-Agent"));
-    requestMap.put("httpVersion", request.getProtocol());
-    requestMap.put("headers", extractRelevantHeaders(request));
-    requestMap.put("body", extractBody(request.getContentAsByteArray(), request.getContentType()));
+    requestMap.put("short_code", shortCode);
 
-    //Response map
-    Map<String, Object> responseMap = new HashMap<>();
-    responseMap.put("status", status);
-    responseMap.put("body", extractBody(response.getContentAsByteArray(), response.getContentType()));
-
-    //Root log entry
-    Map<String, Object> logEntry = new HashMap<>();
-    logEntry.put("logLevel", determineLogLevel(status));
-    logEntry.put("durationMs", duration);
-    logEntry.put("request", requestMap);
-    logEntry.put("response", responseMap);
-
-    try {
-      String logJson = objectMapper.writeValueAsString(logEntry);
-      switch (logEntry.get("logLevel").toString()) {
-        case "ERROR" -> log.error(logJson);
-        case "WARN"  -> log.warn(logJson);
-        default      -> log.info("HTTP transaction log", StructuredArguments.entries(logEntry));
-      }
-    } catch (JsonProcessingException e) {
-      log.error("Failed to serialize structured log entry", e);
-    }
-  }
-
-  private String determineLogLevel(int status) {
-    if (status >= 500) {
-      return "ERROR";
-    } else if (status >= 400) {
-      return "WARN";
+    Map<String, Object> requestBody = new LinkedHashMap<>();
+    String method = request.getMethod();
+    boolean isGetMethod = HttpMethod.GET.matches(method);
+    boolean shouldLogRequestBody = isGetMethod;
+    if (shouldLogRequestBody) {
+      requestBody.put("bytes", 0);
+      requestBody.put("content", "[Body skipped]");
     } else {
-      return "INFO";
+      requestBody.put("bytes", request.getContentAsByteArray().length);
+      requestBody.put("content", extractBody(request.getContentAsByteArray(), request.getContentType()));
     }
+    requestMap.put("body", requestBody);
+
+    Map<String, Object> responseMap = new LinkedHashMap<>();
+    responseMap.put("status_code", status);
+    Map<String, Object> responseBody = new LinkedHashMap<>();
+    boolean shouldLogResponseBody = !uri.startsWith(apiPrefix) && isGetMethod;
+    if (shouldLogResponseBody) {
+      responseBody.put("bytes", 0);
+      responseBody.put("content", "[Body skipped]");
+    } else {
+      responseBody.put("bytes", response.getContentAsByteArray().length);
+      responseBody.put("content", extractBody(response.getContentAsByteArray(), response.getContentType()));
+    }
+    responseMap.put("body", responseBody);
+
+    Map<String, Object> http = new LinkedHashMap<>();
+    http.put("version", request.getProtocol());
+    http.put("request", requestMap);
+    http.put("response", responseMap);
+    return http;
   }
 
-  private Map<String, String> extractRelevantHeaders(HttpServletRequest request) {
-    Map<String, String> headers = new HashMap<>();
-    Enumeration<String> headerNames = request.getHeaderNames();
-    while (headerNames.hasMoreElements()) {
-      String name = headerNames.nextElement().toLowerCase();
-
-      if (List.of("accept", "content-type", "user-agent", "host", "accept-encoding" ).contains(name)) {
-        headers.put(name, request.getHeader(name));
-      }
-    }
-    return headers;
+  private org.slf4j.event.Level determineLevel(int status) {
+    if (status >= 500) return org.slf4j.event.Level.ERROR;
+    if (status >= 400) return org.slf4j.event.Level.WARN;
+    return org.slf4j.event.Level.INFO;
   }
 
   private String getClientIpAddress(HttpServletRequest request) {
-    String header = request.getHeader("X-Forwarded-For");
-    if (header != null && !header.isEmpty()) {
-      return header.split(",")[0]; // In case of multiple IPs, use the first
+    // Check proxy headers in order
+    String[] headers = {
+            "X-Forwarded-For",
+            "X-Real-IP",
+            "CF-Connecting-IP", // Cloudflare
+            "True-Client-IP"
+    };
+
+    for (String header : headers) {
+      String ip = request.getHeader(header);
+      if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+        return ip.split(",")[0].trim();
+      }
     }
+
     return request.getRemoteAddr();
   }
 
   private Object extractBody(byte[] content, String contentType) {
-    if (content.length > 0 && content.length < 2048) {
-      if (contentType != null && contentType.contains("json")) {
-        try {
-          return objectMapper.readValue(content, Map.class);
-        } catch (Exception e) {
-          return "[Invalid JSON Body]";
-        }
-      } else if (contentType != null && contentType.contains("text")) {
+    if (content.length == 0) return null;
+    if (content.length > 2048) return "[Body too large]";
+    try {
+      String type = contentType == null ? "" : contentType.toLowerCase();
+      if (type.contains("json")) {
+        return objectMapper.readValue(content, Map.class);
+      } else if (type.contains("text")) {
         return new String(content, StandardCharsets.UTF_8);
+      } else if (type.startsWith("multipart/")) {
+        return "[Multipart omitted]";
       }
-    } else if (content.length >= 2048) {
-      return "[Body content too large or non-text content]";
+    } catch (Exception e) {
+      return "[Invalid body]";
     }
     return null;
+  }
+
+  private String determineAction(HttpServletRequest request, String shortUrlsPath) {
+    String uri = request.getRequestURI();
+    String method = request.getMethod();
+
+    if (uri.startsWith(shortUrlsPath)) {
+      if (HttpMethod.POST.matches(method)) return "short_url_create";
+      if (HttpMethod.GET.matches(method)) return "short_url_get";
+    }
+    if (HttpMethod.GET.matches(method) && uri.length() == 8) {
+      return "short_url_redirect";
+    }
+    return "http_request";
   }
 }
