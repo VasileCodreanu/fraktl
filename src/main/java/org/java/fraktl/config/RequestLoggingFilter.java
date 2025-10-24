@@ -118,17 +118,24 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
     String query = request.getQueryString() != null ? "?" + request.getQueryString() : "";
     Map<String, Object> http = buildHttpDetails(request, response, uri, query, shortCode, status);
 
-    log.atLevel(determineLevel(status))
-            .setMessage(
-                    isCreateAction ? "Short URL created" :
-                    isGetAction ? "Short URL get" :
+      Map<String, Object> logData = new LinkedHashMap<>();
+      logData.put("message", isCreateAction ? "Short URL created" :
+              isGetAction ? "Short URL get" :
                     isRedirectAction ? "Short URL redirected" :
-                            "HTTP request processed")
-            .addKeyValue(EVENT, event)
-            .addKeyValue(CLIENT, client)
-            .addKeyValue(USER_ID, "user21")
-            .addKeyValue(HTTP, http)
-            .log();
+                            "HTTP request processed");
+      logData.put(EVENT, event);
+      logData.put(CLIENT, client);
+      logData.put(USER_ID, "user21");
+      logData.put(HTTP, http);
+      logData.put("trace_id", MDC.get(TRACE_ID));
+      logData.put("correlation_id", MDC.get(CORRELATION_ID));
+
+      try {
+          String jsonLog = objectMapper.writeValueAsString(logData);
+          log.atLevel(determineLevel(status)).log(jsonLog);
+      } catch (Exception e) {
+          log.error("Failed to serialize log data", e);
+      }
   }
 
   private Map<String, Object> buildHttpDetails(
