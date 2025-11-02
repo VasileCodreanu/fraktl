@@ -1,19 +1,43 @@
-
 services:
-  db:
-    image: 'postgres:17'
-    container_name: url-shortener-db
-    restart: always
-    tty: true
-    stdin_open: true
-    shm_size: 128mb
-    environment:
-      - 'POSTGRES_USER=${DB_USER}'
-      - 'POSTGRES_PASSWORD=${DB_PASSWORD}'
-      - 'POSTGRES_DB=${DB_NAME}'
-      - 'PGDATA=/var/lib/postgresql/data/pgdata'
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: shortener:0.0.1
+    container_name: shortener-service
+    restart: unless-stopped
     env_file:
       - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_APPLICATION_NAME: url-shortener
+      LOKI_URL: http://loki:3100/loki/api/v1/push
+    ports:
+      - "8090:8090"
+    networks:
+      - shortener-backend
+      - monitoring
+    depends_on:
+      db:
+        condition: service_healthy
+      loki:
+        condition: service_started
+
+  db:
+    image: 'postgres:17'
+    container_name: shortener-db
+    restart: unless-stopped
+    shm_size: 128mb
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - pg-data:/var/lib/postgresql/data/pgdata
     healthcheck:
@@ -22,18 +46,23 @@ services:
       timeout: 5s
       retries: 5
       start_period: 5s
-    ports:
-      - "${DB_LOCAL_PORT}:${DB_CONTAINER_PORT}"
+    networks:
+      - shortener-backend
 
   loki:
     image: grafana/loki:latest
-    ports:
-      - "3100:3100"
+    container_name: shortener-loki
+    restart: unless-stopped
     command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki-data:/loki
     networks:
-      - loki
+      - monitoring
 
   grafana:
+    image: grafana/grafana:latest
+    container_name: shortener-grafana
+    restart: unless-stopped
     environment:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
       - GF_AUTH_ANONYMOUS_ENABLED=true
@@ -57,17 +86,25 @@ services:
           editable: false
         EOF
         /run.sh
-    image: grafana/grafana:latest
     ports:
       - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
     networks:
+      - monitoring
+    depends_on:
       - loki
 
 volumes:
-  loki:
   pg-data:
+    driver: local
+  loki-data:
+    driver: local
+  grafana-data:
     driver: local
 
 networks:
-  loki:
+  shortener-backend:
+    driver: bridge
+  monitoring:
     driver: bridge
