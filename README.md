@@ -25,12 +25,12 @@
 - Rename the provided file `env.properties.example` to `env.properties`, and configure the environment variables according to your system setup.
 - Rename the provided file `.env.example` to `.env`, and configure the environment variables for docker according to your system setup.
 
-#### 2. Start PostgreSQL with Docker
-- Run the following command to start the PostgreSQL database using Docker Compose:
+#### 2. Start service
+- Run the following command to start `url-shortener-service` using Docker Compose:
   ```bash
     docker compose up --build
   ```
-#### 3. Run a Spring Boot application
 
-#### 4. Test the Application
-- Use the API request examples provided in the `api-request` directory to test service functionality.
+#### 3. Test the Application
+-  Use the example API requests located in the `api-request` directory to verify that the service is functioning correctly.
+   Refer to the `README.md` file in the same directory for detailed instructions.
