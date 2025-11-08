@@ -23,7 +23,6 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 public class RequestLoggingFilter extends OncePerRequestFilter {
 
   private static final Logger log = LoggerFactory.getLogger(RequestLoggingFilter.class);
-  private static final String TRACE_ID = "trace.id";
   private static final String CORRELATION_ID = "correlation.id";
   private static final String HTTP = "http";
   private static final String CLIENT = "client";
@@ -44,11 +43,10 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
           throws ServletException, IOException {
 
-    String traceId = UUID.randomUUID().toString().replace("-", "");
     String correlationId = Optional.ofNullable(
             request.getHeader("X-Correlation-Id"))
             .orElse(UUID.randomUUID().toString());
-    MDC.put(TRACE_ID, traceId);
+
     MDC.put(CORRELATION_ID, correlationId);
 
     ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(request);
@@ -118,24 +116,17 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
     String query = request.getQueryString() != null ? "?" + request.getQueryString() : "";
     Map<String, Object> http = buildHttpDetails(request, response, uri, query, shortCode, status);
 
-      Map<String, Object> logData = new LinkedHashMap<>();
-      logData.put("message", isCreateAction ? "Short URL created" :
-              isGetAction ? "Short URL get" :
-                    isRedirectAction ? "Short URL redirected" :
-                            "HTTP request processed");
-      logData.put(EVENT, event);
-      logData.put(CLIENT, client);
-      logData.put(USER_ID, "user21");
-      logData.put(HTTP, http);
-      logData.put("trace_id", MDC.get(TRACE_ID));
-      logData.put("correlation_id", MDC.get(CORRELATION_ID));
-
-      try {
-          String jsonLog = objectMapper.writeValueAsString(logData);
-          log.atLevel(determineLevel(status)).log(jsonLog);
-      } catch (Exception e) {
-          log.error("Failed to serialize log data", e);
-      }
+    log.atLevel(determineLevel(status))
+              .setMessage(
+                      isCreateAction ? "Short URL created" :
+                              isGetAction ? "Short URL get" :
+                                      isRedirectAction ? "Short URL redirected" :
+                                              "HTTP request processed")
+              .addKeyValue(EVENT, event)
+              .addKeyValue(CLIENT, client)
+              .addKeyValue(USER_ID, "user21")
+              .addKeyValue(HTTP, http)
+              .log();
   }
 
   private Map<String, Object> buildHttpDetails(
