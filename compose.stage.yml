@@ -14,7 +14,7 @@ services:
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_APPLICATION_NAME: ${SERVICE_NAME}
-    # OpenTelemetry configuration
+      # OpenTelemetry configuration
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
       OTEL_EXPORTER_OTLP_PROTOCOL: grpc
       OTEL_LOG_LEVEL: info
@@ -23,6 +23,13 @@ services:
       OTEL_METRICS_EXPORTER: none
       OTEL_INSTRUMENTATION_LOGBACK_APPENDER_EXPERIMENTAL_CAPTURE_KEY_VALUE_PAIR_ATTRIBUTES: true
       OTEL_INSTRUMENTATION_LOGBACK_APPENDER_EXPERIMENTAL_CAPTURE_LOGGER_CONTEXT: true
+
+    #    healthcheck:
+    #      test: ["CMD-SHELL", "curl -fs http://localhost:8080/actuator/health || exit 1"]
+    #      interval: 10s
+    #      timeout: 10s
+    #      start_period: 30s
+    #      retries: 3
 
     ports:
       - "8090:8090"
@@ -96,9 +103,9 @@ services:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
-#      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
-#      - GF_USERS_ALLOW_SIGN_UP=false
-#      - GF_LOG_LEVEL=warn
+    #      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+    #      - GF_USERS_ALLOW_SIGN_UP=false
+    #      - GF_LOG_LEVEL=warn
     entrypoint:
       - sh
       - -euc
