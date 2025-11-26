@@ -1,10 +1,10 @@
 local-up:
-	docker compose -f compose.local.yml up -d
+	docker compose -f compose.local.yml up -d --build
 local-down:
 	docker compose -f compose.local.yml down -v
 
 stage-up:
-	docker compose -f compose.stage.yml up -d
+	docker compose -f compose.stage.yml up -d --build
 stage-down:
 	docker compose -f compose.stage.yml down -v
 

@@ -11,9 +11,7 @@
 - **Maven**
 - **Lombok**
 - **Spring Boot 3.5**
-  - Spring Web
-  - Spring Validation
-  - Spring Data
+  (Web, Validation, Data)
 - **Postgres**
 - **Flyway (DB migrations)**
 - **Docker**
@@ -26,11 +24,17 @@
 - Rename the provided file `.env.example` to `.env`, and configure the environment variables for docker according to your system setup.
 
 #### 2. Start service
-- Run the following command to start `url-shortener-service` using Docker Compose:
+- Run the following command to start `url-shortener-service`:
   ```bash
-    docker compose up --build
+    make stage-up
   ```
 
 #### 3. Test the Application
 -  Use the example API requests located in the `api-request` directory to verify that the service is functioning correctly.
    Refer to the `README.md` file in the same directory for detailed instructions.
+
+#### 4. Stop service
+- Run the following command to stop `url-shortener-service`:
+  ```bash
+    make stage-down
+  ```
