@@ -1,8 +1,8 @@
 services:
   app:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: ./docker/Dockerfile
     image: ${SERVICE_NAME}:${SERVICE_VERSION}
     container_name: ${SERVICE_NAME}
     restart: unless-stopped

@@ -194,7 +194,7 @@ build/
 .spring-boot-devtools.properties
 
 # Environment files
-.env
+docker/.env
 env.properties
 
 # Database files

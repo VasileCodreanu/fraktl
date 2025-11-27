@@ -113,6 +113,6 @@ coverage/
 compose.yml
 
 # Env & credentials (make sure these are not baked into image!)
-.env
+docker/.env
 *.env
 !env.properties.example

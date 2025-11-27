@@ -10,11 +10,11 @@ RUN wget -O /app/opentelemetry-javaagent.jar \
     https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v${OTEL_VERSION}/opentelemetry-javaagent.jar
 
 # Download dependencies
-COPY pom.xml ./
+COPY ../pom.xml ./
 RUN mvn dependency:go-offline -B
 
 # Build app
-COPY src ./src
+COPY ../src ./src
 RUN mvn clean package -DskipTests
 
 # Stage 2: Runtime
