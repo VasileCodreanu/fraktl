@@ -38,3 +38,29 @@
   ```bash
     make stage-down
   ```
+---
+
+#### 5. Running Tests
+Project includes both unit-tests and integration-tests.
+  You can run them as:
+- Run Unit Tests Only:
+    - Option 1: The standard Maven command for running tests in the 'test' phase
+    ```bash 
+        mvn clean test
+    ```
+  
+    - Option 2: Using the 'verify' phase and explicitly skipping integration tests
+    ```bash 
+        mvn clean verify -DskipIntegrationTests=true
+    ```
+  
+- Run Unit Integration-tests Only:
+  ```bash
+    mvn clean verify -DskipUnitTests=true
+  ```
+  
+- Run All tests:
+  ```bash
+    mvn clean verify
+  ```
+
