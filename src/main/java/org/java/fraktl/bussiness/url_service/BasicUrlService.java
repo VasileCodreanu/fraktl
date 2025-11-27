@@ -14,36 +14,36 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class BasicUrlService implements UrlService {
 
-    private final UrlShortenerService shortenerService;
-    private final UrlExpanderService expanderService;
+  private final UrlShortenerService shortenerService;
+  private final UrlExpanderService expanderService;
 
-    private final UrlRepository urlRepository;
+  private final UrlRepository urlRepository;
 
-    @Transactional
-    public String shortenUrl(ShortenUrlRequest request) {
+  @Transactional
+  public String shortenUrl(ShortenUrlRequest request) {
 
-        UrlMapping urlMapping = new UrlMapping();
+    UrlMapping urlMapping = new UrlMapping();
 
-        urlRepository.save(urlMapping);
-        String shortUrl = shortenerService.createShortUrl(urlMapping.getId());
+    urlRepository.save(urlMapping);
+    String shortUrl = shortenerService.createShortUrl(urlMapping.getId());
 
-        urlMapping.setOriginalUrl(request.originalUrl());
-        urlMapping.setShortUrl(shortUrl);
+    urlMapping.setOriginalUrl(request.originalUrl());
+    urlMapping.setShortUrl(shortUrl);
 
-        urlRepository.save(urlMapping);
+    urlRepository.save(urlMapping);
 
-        return shortUrl;
-    }
+    return shortUrl;
+  }
 
-    @Transactional(readOnly = true)
-    public String expandUrl(String shortUrl) {
+  @Transactional(readOnly = true)
+  public String expandUrl(String shortUrl) {
 
-        long id = expanderService.expand(shortUrl);
+    long id = expanderService.expand(shortUrl);
 
-        UrlMapping urlMapping = urlRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException(
-                String.format("Resource with short-url equal to: '%s' is not present.", shortUrl)));
+    UrlMapping urlMapping = urlRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException(
+            String.format("Resource with short-url equal to: '%s' is not present.", shortUrl)));
 
-        return urlMapping.getOriginalUrl();
-    }
+    return urlMapping.getOriginalUrl();
+  }
 }

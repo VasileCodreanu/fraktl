@@ -23,7 +23,7 @@ public class UrlRedirectController {
 
   @GetMapping(value = "/{shortUrl}", produces = APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> expandShortUrl(
-      @NotBlank @Size(min=7, max=7) @PathVariable String shortUrl) {
+      @NotBlank @Size(min = 7, max = 7) @PathVariable String shortUrl) {
 
     String longUrl = urlService.expandUrl(shortUrl);
 

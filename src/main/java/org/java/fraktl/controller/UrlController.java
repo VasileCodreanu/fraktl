@@ -45,7 +45,7 @@ public class UrlController {
 
   @GetMapping(value = "/{shortUrl}", produces = APPLICATION_JSON_VALUE)
   public ResponseEntity<ApiResponse<LongUrlResponse>> expandShortUrl(
-      @NotBlank @Size(min=7, max=7) @PathVariable("shortUrl") String shortUrl) {
+      @NotBlank @Size(min = 7, max = 7) @PathVariable("shortUrl") String shortUrl) {
 
     String longUrl = urlService.expandUrl(shortUrl);
     LongUrlResponse responseBody = new LongUrlResponse(longUrl);

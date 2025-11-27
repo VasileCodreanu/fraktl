@@ -7,6 +7,7 @@ public record ShortUrlResponse(
     LocalDateTime creationDate,
     LocalDateTime expirationDate
 ) {
+
   public ShortUrlResponse(String shortUrl) {
     this(shortUrl, LocalDateTime.now(), LocalDateTime.now().plusDays(5));
   }

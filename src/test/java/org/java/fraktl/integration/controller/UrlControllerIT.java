@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.java.fraktl.model.response.ApiResponse;
 import org.java.fraktl.model.response.ResponseStatus;
@@ -16,7 +15,6 @@ import org.java.fraktl.model.response.short_url.ShortUrlResponse;
 import org.java.fraktl.model.response.short_url.ShortenUrlRequest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -47,7 +45,8 @@ class UrlControllerIT {
   void shouldReturnNotFoundForInvalidShortCode() {
     // Arrange
     String invalidShortCode = "noexist";
-    String expectedDebugMessage = String.format("Resource with short-url equal to: '%s' is not present.", invalidShortCode);
+    String expectedDebugMessage = String.format(
+        "Resource with short-url equal to: '%s' is not present.", invalidShortCode);
 
     // Act & Assert
     webTestClient.get()
@@ -93,7 +92,8 @@ class UrlControllerIT {
 
     String shortUrl = shortUrlResponse.shortUrl();
     assertNotNull(shortUrl);
-    assertTrue(shortUrl.startsWith(BASE_URL), String.format("Short URL does not start with: %s.", BASE_URL));
+    assertTrue(shortUrl.startsWith(BASE_URL),
+        String.format("Short URL does not start with: %s.", BASE_URL));
     String shortCode = shortUrl.substring(BASE_URL.length());
 
     //Assert: Retrieve original long URL using the shortcode

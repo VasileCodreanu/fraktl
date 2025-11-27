@@ -1,144 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.5.0</version>
-    <relativePath/>
-  </parent>
-
-  <groupId>org.java</groupId>
   <artifactId>fraktl</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>fraktl</name>
-  <description>URL Shortener</description>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java.version>21</java.version>
-    <jacoco.version>0.8.12</jacoco.version>
-    <skipUnitTests>false</skipUnitTests>
-    <skipIntegrationTests>false</skipIntegrationTests>
-  </properties>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-validation</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.flywaydb</groupId>
-      <artifactId>flyway-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.flywaydb</groupId>
-      <artifactId>flyway-database-postgresql</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-testcontainers</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webflux</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>${jacoco.version}</version>
         <executions>
           <!-- Unit test preparation -->
           <execution>
-            <id>pre-unit-tests</id>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
             <configuration>
               <destFile>${project.build.directory}/jacoco-output/jacoco-unit-tests.exec</destFile>
               <propertyName>surefire.jacoco.args</propertyName>
             </configuration>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+            <id>pre-unit-tests</id>
           </execution>
 
           <!-- Unit test report -->
           <execution>
-            <id>post-unit-test</id>
-            <phase>test</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
             <configuration>
               <dataFile>${project.build.directory}/jacoco-output/jacoco-unit-tests.exec</dataFile>
               <outputDirectory>
                 ${project.reporting.outputDirectory}/jacoco-unit-test-coverage-report
               </outputDirectory>
             </configuration>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <id>post-unit-test</id>
+            <phase>test</phase>
           </execution>
 
           <!-- Integration test preparation -->
           <execution>
-            <id>pre-integration-tests</id>
-            <phase>pre-integration-test</phase>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
             <configuration>
               <destFile>${project.build.directory}/jacoco-output/jacoco-integration-tests.exec
               </destFile>
               <propertyName>failsafe.jacoco.args</propertyName>
             </configuration>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+            <id>pre-integration-tests</id>
+            <phase>pre-integration-test</phase>
           </execution>
 
           <!-- Integration test report -->
           <execution>
-            <id>post-integration-tests</id>
-            <phase>post-integration-test</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
             <configuration>
               <dataFile>${project.build.directory}/jacoco-output/jacoco-integration-tests.exec
               </dataFile>
@@ -146,16 +59,17 @@
                 ${project.reporting.outputDirectory}/jacoco-integration-test-coverage-report
               </outputDirectory>
             </configuration>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <id>post-integration-tests</id>
+            <phase>post-integration-test</phase>
           </execution>
 
           <!-- Merge coverage data -->
           <execution>
-            <id>merge</id>
-            <phase>post-integration-test</phase>
-            <goals>
-              <goal>merge</goal>
-            </goals>
             <configuration>
+              <destFile>${project.build.directory}/jacoco-output/merged.exec</destFile>
               <fileSets>
                 <fileSet>
                   <directory>${project.build.directory}/jacoco-output/</directory>
@@ -164,32 +78,31 @@
                   </includes>
                 </fileSet>
               </fileSets>
-              <destFile>${project.build.directory}/jacoco-output/merged.exec</destFile>
             </configuration>
+            <goals>
+              <goal>merge</goal>
+            </goals>
+            <id>merge</id>
+            <phase>post-integration-test</phase>
           </execution>
 
           <!-- Generate merged report -->
           <execution>
-            <id>post-merge-report</id>
-            <phase>post-integration-test</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
             <configuration>
               <dataFile>${project.build.directory}/jacoco-output/merged.exec</dataFile>
               <outputDirectory>
                 ${project.reporting.outputDirectory}/jacoco-merged-test-coverage-report
               </outputDirectory>
             </configuration>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <id>post-merge-report</id>
+            <phase>post-integration-test</phase>
           </execution>
 
           <!-- Coverage check -->
           <execution>
-            <id>jacoco-check</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
             <configuration>
               <dataFile>${project.build.directory}/jacoco-output/merged.exec</dataFile>
               <rules>
@@ -198,39 +111,45 @@
                   <limits>
                     <limit>
                       <counter>BRANCH</counter>
-                      <value>COVEREDRATIO</value>
                       <minimum>0.50</minimum>
+                      <value>COVEREDRATIO</value>
                     </limit>
                     <limit>
                       <counter>LINE</counter>
-                      <value>COVEREDRATIO</value>
                       <minimum>0.70</minimum>
+                      <value>COVEREDRATIO</value>
                     </limit>
                   </limits>
                 </rule>
               </rules>
             </configuration>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <id>jacoco-check</id>
+            <phase>verify</phase>
           </execution>
         </executions>
+        <groupId>org.jacoco</groupId>
+        <version>${jacoco.version}</version>
       </plugin>
 
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <skipTests>${skipUnitTests}</skipTests>
           <argLine>${surefire.jacoco.args}</argLine>
           <groups>unit</groups>
+          <skipTests>${skipUnitTests}</skipTests>
         </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
       </plugin>
 
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
-          <skipTests>${skipIntegrationTests}</skipTests>
           <argLine>${failsafe.jacoco.args}</argLine>
           <groups>integration</groups>
+          <skipTests>${skipIntegrationTests}</skipTests>
         </configuration>
         <executions>
           <execution>
@@ -240,33 +159,114 @@
             </goals>
           </execution>
         </executions>
+        <groupId>org.apache.maven.plugins</groupId>
       </plugin>
 
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <annotationProcessorPaths>
             <path>
-              <groupId>org.projectlombok</groupId>
               <artifactId>lombok</artifactId>
+              <groupId>org.projectlombok</groupId>
             </path>
           </annotationProcessorPaths>
         </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
       </plugin>
       <plugin>
-        <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
           <excludes>
             <exclude>
-              <groupId>org.projectlombok</groupId>
               <artifactId>lombok</artifactId>
+              <groupId>org.projectlombok</groupId>
             </exclude>
           </excludes>
         </configuration>
+        <groupId>org.springframework.boot</groupId>
       </plugin>
     </plugins>
   </build>
+
+  <dependencies>
+    <dependency>
+      <artifactId>spring-boot-starter-validation</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+
+    <dependency>
+      <artifactId>flyway-core</artifactId>
+      <groupId>org.flywaydb</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>flyway-database-postgresql</artifactId>
+      <groupId>org.flywaydb</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>postgresql</artifactId>
+      <groupId>org.postgresql</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+
+    <dependency>
+      <artifactId>spring-boot-testcontainers</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter-webflux</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <artifactId>junit-jupiter</artifactId>
+      <groupId>org.testcontainers</groupId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <artifactId>postgresql</artifactId>
+      <groupId>org.testcontainers</groupId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <artifactId>lombok</artifactId>
+      <groupId>org.projectlombok</groupId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <description>URL Shortener</description>
+  <groupId>org.java</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <name>fraktl</name>
+
+  <parent>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <groupId>org.springframework.boot</groupId>
+    <relativePath/>
+    <version>3.5.0</version>
+  </parent>
+
+  <properties>
+    <jacoco.version>0.8.12</jacoco.version>
+    <java.version>21</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <skipIntegrationTests>false</skipIntegrationTests>
+    <skipUnitTests>false</skipUnitTests>
+  </properties>
+
+  <version>0.0.1-SNAPSHOT</version>
 
 </project>

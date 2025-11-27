@@ -7,8 +7,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
-
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -33,19 +35,20 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
   private final String apiPrefix;
 
   public RequestLoggingFilter(
-          ObjectMapper objectMapper,
-          @Value("${api.prefix.v1}")String apiPrefix) {
+      ObjectMapper objectMapper,
+      @Value("${api.prefix.v1}") String apiPrefix) {
     this.objectMapper = objectMapper;
     this.apiPrefix = apiPrefix;
   }
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-          throws ServletException, IOException {
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+      FilterChain filterChain)
+      throws ServletException, IOException {
 
     String correlationId = Optional.ofNullable(
             request.getHeader("X-Correlation-Id"))
-            .orElse(UUID.randomUUID().toString());
+        .orElse(UUID.randomUUID().toString());
 
     MDC.put(CORRELATION_ID, correlationId);
 
@@ -75,10 +78,10 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
   }
 
   private void logRequestDetails(
-          ContentCachingRequestWrapper request,
-          ContentCachingResponseWrapper response,
-          long durationMs,
-          Throwable exception) {
+      ContentCachingRequestWrapper request,
+      ContentCachingResponseWrapper response,
+      long durationMs,
+      Throwable exception) {
     String uri = request.getRequestURI();
     String method = request.getMethod();
     int status = response.getStatus();
@@ -97,7 +100,7 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
       } else if (uri.contains(shortUrlsPath)) {
         isGetAction = true;
       }
-    }else if (uri.contains(shortUrlsPath) && HttpMethod.POST.matches(method)) {
+    } else if (uri.contains(shortUrlsPath) && HttpMethod.POST.matches(method)) {
       isCreateAction = true;
     }
 
@@ -112,26 +115,27 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
     client.put("ip", getClientIpAddress(request));
     client.put("user_agent", request.getHeader("User-Agent"));
 
-    String shortCode = isGetAction || isRedirectAction ? (uri.substring(uri.lastIndexOf('/') + 1)) : "N/A";
+    String shortCode =
+        isGetAction || isRedirectAction ? (uri.substring(uri.lastIndexOf('/') + 1)) : "N/A";
     String query = request.getQueryString() != null ? "?" + request.getQueryString() : "";
     Map<String, Object> http = buildHttpDetails(request, response, uri, query, shortCode, status);
 
     log.atLevel(determineLevel(status))
-              .setMessage(
-                      isCreateAction ? "Short URL created" :
-                              isGetAction ? "Short URL get" :
-                                      isRedirectAction ? "Short URL redirected" :
-                                              "HTTP request processed")
-              .addKeyValue(EVENT, event)
-              .addKeyValue(CLIENT, client)
-              .addKeyValue(USER_ID, "user21")
-              .addKeyValue(HTTP, http)
-              .log();
+        .setMessage(
+            isCreateAction ? "Short URL created" :
+                isGetAction ? "Short URL get" :
+                    isRedirectAction ? "Short URL redirected" :
+                        "HTTP request processed")
+        .addKeyValue(EVENT, event)
+        .addKeyValue(CLIENT, client)
+        .addKeyValue(USER_ID, "user21")
+        .addKeyValue(HTTP, http)
+        .log();
   }
 
   private Map<String, Object> buildHttpDetails(
-          ContentCachingRequestWrapper request, ContentCachingResponseWrapper response,
-          String uri, String query, String shortCode, int status) {
+      ContentCachingRequestWrapper request, ContentCachingResponseWrapper response,
+      String uri, String query, String shortCode, int status) {
 
     Map<String, Object> requestMap = new LinkedHashMap<>();
     requestMap.put("method", request.getMethod());
@@ -148,7 +152,8 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
       requestBody.put("content", "[Body skipped]");
     } else {
       requestBody.put("bytes", request.getContentAsByteArray().length);
-      requestBody.put("content", extractBody(request.getContentAsByteArray(), request.getContentType()));
+      requestBody.put("content",
+          extractBody(request.getContentAsByteArray(), request.getContentType()));
     }
     requestMap.put("body", requestBody);
 
@@ -161,7 +166,8 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
       responseBody.put("content", "[Body skipped]");
     } else {
       responseBody.put("bytes", response.getContentAsByteArray().length);
-      responseBody.put("content", extractBody(response.getContentAsByteArray(), response.getContentType()));
+      responseBody.put("content",
+          extractBody(response.getContentAsByteArray(), response.getContentType()));
     }
     responseMap.put("body", responseBody);
 
@@ -173,18 +179,22 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
   }
 
   private org.slf4j.event.Level determineLevel(int status) {
-    if (status >= 500) return org.slf4j.event.Level.ERROR;
-    if (status >= 400) return org.slf4j.event.Level.WARN;
+    if (status >= 500) {
+      return org.slf4j.event.Level.ERROR;
+    }
+    if (status >= 400) {
+      return org.slf4j.event.Level.WARN;
+    }
     return org.slf4j.event.Level.INFO;
   }
 
   private String getClientIpAddress(HttpServletRequest request) {
     // Check proxy headers in order
     String[] headers = {
-            "X-Forwarded-For",
-            "X-Real-IP",
-            "CF-Connecting-IP", // Cloudflare
-            "True-Client-IP"
+        "X-Forwarded-For",
+        "X-Real-IP",
+        "CF-Connecting-IP", // Cloudflare
+        "True-Client-IP"
     };
 
     for (String header : headers) {
@@ -198,8 +208,12 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
   }
 
   private Object extractBody(byte[] content, String contentType) {
-    if (content.length == 0) return null;
-    if (content.length > 2048) return "[Body too large]";
+    if (content.length == 0) {
+      return null;
+    }
+    if (content.length > 2048) {
+      return "[Body too large]";
+    }
     try {
       String type = contentType == null ? "" : contentType.toLowerCase();
       if (type.contains("json")) {
@@ -220,8 +234,12 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
     String method = request.getMethod();
 
     if (uri.startsWith(shortUrlsPath)) {
-      if (HttpMethod.POST.matches(method)) return "short_url_create";
-      if (HttpMethod.GET.matches(method)) return "short_url_get";
+      if (HttpMethod.POST.matches(method)) {
+        return "short_url_create";
+      }
+      if (HttpMethod.GET.matches(method)) {
+        return "short_url_get";
+      }
     }
     if (HttpMethod.GET.matches(method) && uri.length() == 8) {
       return "short_url_redirect";

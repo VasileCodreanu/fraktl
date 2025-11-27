@@ -11,14 +11,15 @@ import lombok.Data;
 @Data
 @Builder
 public class ApiError {
-    private int status;
-    private String message;
-    private String debugMessage;
 
-    @Builder.Default
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss.SSS")
-    private LocalDateTime timestamp = LocalDateTime.now();
+  private int status;
+  private String message;
+  private String debugMessage;
 
-    @JsonInclude(Include.NON_NULL)
-    private List<ApiSubError> subErrors;
+  @Builder.Default
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss.SSS")
+  private LocalDateTime timestamp = LocalDateTime.now();
+
+  @JsonInclude(Include.NON_NULL)
+  private List<ApiSubError> subErrors;
 }

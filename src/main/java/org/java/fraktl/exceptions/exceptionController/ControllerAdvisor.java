@@ -28,83 +28,83 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    protected ResponseEntity<Object> handleNoSuchElement(ResourceNotFoundException ex){
+  @ExceptionHandler(ResourceNotFoundException.class)
+  protected ResponseEntity<Object> handleNoSuchElement(ResourceNotFoundException ex) {
 
-      log.warn("Resource not found: {}", ex.getMessage(), ex);
+    log.warn("Resource not found: {}", ex.getMessage(), ex);
 
-        ApiError apiError = ApiError.builder()
-            .status(NOT_FOUND.value())
-            .message("The requested resource was not found.")
-            .debugMessage(ex.getMessage())
-            .subErrors(null)
-            .build();
+    ApiError apiError = ApiError.builder()
+        .status(NOT_FOUND.value())
+        .message("The requested resource was not found.")
+        .debugMessage(ex.getMessage())
+        .subErrors(null)
+        .build();
 
-        return buildResponseEntity(apiError, NOT_FOUND);
-    }
+    return buildResponseEntity(apiError, NOT_FOUND);
+  }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    protected ResponseEntity<Object> handleNConstraintViolation(ConstraintViolationException ex){
+  @ExceptionHandler(ConstraintViolationException.class)
+  protected ResponseEntity<Object> handleNConstraintViolation(ConstraintViolationException ex) {
 
-      log.warn("Constraint Violation Exception: {}", ex.getMessage(), ex);
+    log.warn("Constraint Violation Exception: {}", ex.getMessage(), ex);
 
-        ApiError apiError = ApiError.builder()
-            .status(BAD_REQUEST.value())
-            .message("Request validation failed. Please review the documentation for more details.")
-            .debugMessage(ex.getMessage())
-            .subErrors(null)
-            .build();
+    ApiError apiError = ApiError.builder()
+        .status(BAD_REQUEST.value())
+        .message("Request validation failed. Please review the documentation for more details.")
+        .debugMessage(ex.getMessage())
+        .subErrors(null)
+        .build();
 
-        return buildResponseEntity(apiError, BAD_REQUEST);
-    }
+    return buildResponseEntity(apiError, BAD_REQUEST);
+  }
 
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-        MethodArgumentNotValidException ex,
-        HttpHeaders headers,
-        HttpStatusCode status,
-        WebRequest request) {
+  @Override
+  protected ResponseEntity<Object> handleMethodArgumentNotValid(
+      MethodArgumentNotValidException ex,
+      HttpHeaders headers,
+      HttpStatusCode status,
+      WebRequest request) {
 
-      log.warn("Method Argument Validation error: {}", ex.getMessage(), ex);
+    log.warn("Method Argument Validation error: {}", ex.getMessage(), ex);
 
-        List<ApiSubError> subErrors = ex.getBindingResult().getFieldErrors()
-            .stream()
-            .map(err ->
-                ApiSubError.builder()
-                    .field(err.getField())
-                    .rejectedValue(err.getRejectedValue())
-                    .message(err.getDefaultMessage())
-                    .build())
-            .toList();
+    List<ApiSubError> subErrors = ex.getBindingResult().getFieldErrors()
+        .stream()
+        .map(err ->
+            ApiSubError.builder()
+                .field(err.getField())
+                .rejectedValue(err.getRejectedValue())
+                .message(err.getDefaultMessage())
+                .build())
+        .toList();
 
-        ApiError apiError = ApiError.builder()
-            .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
-            .message(HttpStatus.UNPROCESSABLE_ENTITY.getReasonPhrase())
-            .debugMessage("Validation failed. Please review the documentation for more details.")
-            .subErrors(subErrors)
-            .build();
+    ApiError apiError = ApiError.builder()
+        .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
+        .message(HttpStatus.UNPROCESSABLE_ENTITY.getReasonPhrase())
+        .debugMessage("Validation failed. Please review the documentation for more details.")
+        .subErrors(subErrors)
+        .build();
 
-        return buildResponseEntity(apiError, HttpStatus.UNPROCESSABLE_ENTITY);
-    }
+    return buildResponseEntity(apiError, HttpStatus.UNPROCESSABLE_ENTITY);
+  }
 
-    @ExceptionHandler(Exception.class)
-    protected ResponseEntity<Object> handleAllExceptions(Exception ex) {
+  @ExceptionHandler(Exception.class)
+  protected ResponseEntity<Object> handleAllExceptions(Exception ex) {
 
-      log.error("Internal Server Error: {}", ex.getMessage(), ex);
+    log.error("Internal Server Error: {}", ex.getMessage(), ex);
 
-      ApiError apiError = ApiError.builder()
-          .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-          .message("An unexpected error occurred.")
-          .debugMessage(ex.getMessage())
-          .subErrors(null)
-          .build();
+    ApiError apiError = ApiError.builder()
+        .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+        .message("An unexpected error occurred.")
+        .debugMessage(ex.getMessage())
+        .subErrors(null)
+        .build();
 
-      return buildResponseEntity(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return buildResponseEntity(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
 
-    private ResponseEntity<Object> buildResponseEntity(ApiError apiError, HttpStatus status) {
+  private ResponseEntity<Object> buildResponseEntity(ApiError apiError, HttpStatus status) {
 
-        ApiResponse<ApiError> apiResponse = new ApiResponse<>(FAILURE, apiError);
-        return new ResponseEntity<>(apiResponse, status);
-    }
+    ApiResponse<ApiError> apiResponse = new ApiResponse<>(FAILURE, apiError);
+    return new ResponseEntity<>(apiResponse, status);
+  }
 }
