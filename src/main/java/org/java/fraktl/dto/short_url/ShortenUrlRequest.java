@@ -1,4 +1,4 @@
-package org.java.fraktl.model.response.short_url;
+package org.java.fraktl.dto.short_url;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -1,13 +1,14 @@
-package org.java.fraktl.bussiness.url_service;
+package org.java.fraktl.service;
 
-import static org.java.fraktl.bussiness.url_service.UrlConstants.BASE_URL;
-import static org.java.fraktl.bussiness.url_service.UrlConstants.CHAR_SET;
-import static org.java.fraktl.bussiness.url_service.UrlConstants.SHORT_URL_LENGTH;
+import static org.java.fraktl.service.impl.helpers.UrlConstants.BASE_URL;
+import static org.java.fraktl.service.impl.helpers.UrlConstants.CHAR_SET;
+import static org.java.fraktl.service.impl.helpers.UrlConstants.SHORT_URL_LENGTH;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.java.fraktl.service.impl.helpers.UrlShortenerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

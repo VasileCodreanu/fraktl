@@ -1,6 +1,6 @@
 package org.java.fraktl.exceptions.exceptionController;
 
-import static org.java.fraktl.model.response.ResponseStatus.FAILURE;
+import static org.java.fraktl.dto.ResponseStatus.FAILURE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.java.fraktl.exceptions.errorModel.ApiError;
 import org.java.fraktl.exceptions.errorModel.ApiSubError;
 import org.java.fraktl.exceptions.errorModel.customExceptions.ResourceNotFoundException;
-import org.java.fraktl.model.response.ApiResponse;
+import org.java.fraktl.dto.ApiResponse;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;

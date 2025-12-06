@@ -1,6 +1,6 @@
-package org.java.fraktl.bussiness;
+package org.java.fraktl.service;
 
-import org.java.fraktl.model.response.short_url.ShortenUrlRequest;
+import org.java.fraktl.dto.short_url.ShortenUrlRequest;
 
 public interface UrlService {
 

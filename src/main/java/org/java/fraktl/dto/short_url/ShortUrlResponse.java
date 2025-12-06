@@ -1,4 +1,4 @@
-package org.java.fraktl.model.response.short_url;
+package org.java.fraktl.dto.short_url;
 
 import java.time.LocalDateTime;
 

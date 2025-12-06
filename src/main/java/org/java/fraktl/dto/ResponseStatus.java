@@ -1,4 +1,4 @@
-package org.java.fraktl.model.response;
+package org.java.fraktl.dto;
 
 public class ResponseStatus {
 

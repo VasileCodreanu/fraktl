@@ -1,9 +1,10 @@
-package org.java.fraktl.bussiness.url_service;
+package org.java.fraktl.service;
 
-import static org.java.fraktl.bussiness.url_service.UrlConstants.BASE_URL;
+import static org.java.fraktl.service.impl.helpers.UrlConstants.BASE_URL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import org.java.fraktl.service.impl.helpers.UrlExpanderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

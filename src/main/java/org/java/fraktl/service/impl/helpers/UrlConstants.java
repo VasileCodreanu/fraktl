@@ -1,4 +1,4 @@
-package org.java.fraktl.bussiness.url_service;
+package org.java.fraktl.service.impl.helpers;
 
 public final class UrlConstants {
 

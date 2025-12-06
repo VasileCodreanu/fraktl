@@ -1,12 +1,14 @@
-package org.java.fraktl.bussiness.url_service;
+package org.java.fraktl.service.impl;
 
 
 import lombok.RequiredArgsConstructor;
-import org.java.fraktl.bussiness.UrlService;
-import org.java.fraktl.bussiness.repository.UrlRepository;
+import org.java.fraktl.repository.UrlRepository;
 import org.java.fraktl.exceptions.errorModel.customExceptions.ResourceNotFoundException;
-import org.java.fraktl.model.entity.UrlMapping;
-import org.java.fraktl.model.response.short_url.ShortenUrlRequest;
+import org.java.fraktl.entity.UrlMapping;
+import org.java.fraktl.dto.short_url.ShortenUrlRequest;
+import org.java.fraktl.service.UrlService;
+import org.java.fraktl.service.impl.helpers.UrlExpanderService;
+import org.java.fraktl.service.impl.helpers.UrlShortenerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

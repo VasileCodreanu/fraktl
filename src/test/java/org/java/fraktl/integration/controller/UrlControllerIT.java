@@ -1,7 +1,7 @@
 package org.java.fraktl.integration.controller;
 
 
-import static org.java.fraktl.bussiness.url_service.UrlConstants.BASE_URL;
+import static org.java.fraktl.service.impl.helpers.UrlConstants.BASE_URL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,10 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.java.fraktl.model.response.ApiResponse;
-import org.java.fraktl.model.response.ResponseStatus;
-import org.java.fraktl.model.response.short_url.ShortUrlResponse;
-import org.java.fraktl.model.response.short_url.ShortenUrlRequest;
+import org.java.fraktl.dto.ApiResponse;
+import org.java.fraktl.dto.ResponseStatus;
+import org.java.fraktl.dto.short_url.ShortUrlResponse;
+import org.java.fraktl.dto.short_url.ShortenUrlRequest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

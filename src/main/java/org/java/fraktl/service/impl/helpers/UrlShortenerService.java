@@ -1,8 +1,8 @@
-package org.java.fraktl.bussiness.url_service;
+package org.java.fraktl.service.impl.helpers;
 
-import static org.java.fraktl.bussiness.url_service.UrlConstants.BASE_URL;
-import static org.java.fraktl.bussiness.url_service.UrlConstants.CHAR_SET;
-import static org.java.fraktl.bussiness.url_service.UrlConstants.SHORT_URL_LENGTH;
+import static org.java.fraktl.service.impl.helpers.UrlConstants.BASE_URL;
+import static org.java.fraktl.service.impl.helpers.UrlConstants.CHAR_SET;
+import static org.java.fraktl.service.impl.helpers.UrlConstants.SHORT_URL_LENGTH;
 
 import org.springframework.stereotype.Service;
 
