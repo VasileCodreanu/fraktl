@@ -1,10 +1,14 @@
 package org.java.fraktl.service;
 
+import jakarta.validation.constraints.NotBlank;
+import org.java.fraktl.dto.ShortUrlResponse;
 import org.java.fraktl.dto.ShortenUrlRequest;
 
 public interface UrlMappingService {
 
-  String createShortUrl(ShortenUrlRequest shortenUrlRequest);
+  ShortUrlResponse createShortUrl(ShortenUrlRequest shortenUrlRequest);
 
-  String resolveShortUrl(String shortUrl);
+  String resolveShortCode(String shortUrl);
+
+  ShortUrlResponse getShortUrlDetailsByShortCode(@NotBlank String shortUrl);
 }

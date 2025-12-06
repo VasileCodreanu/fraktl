@@ -44,9 +44,9 @@ class UrlManagementControllerIT {
   @Test
   void shouldReturnNotFoundForInvalidShortCode() {
     // Arrange
-    String invalidShortCode = "noexist";
+    String invalidShortCode = "invalid";
     String expectedDebugMessage = String.format(
-        "Resource with short-url equal to: '%s' is not present.", invalidShortCode);
+        "Resource with short-code equal to: '%s' is not present.", invalidShortCode);
 
     // Act & Assert
     webTestClient.get()
@@ -63,8 +63,8 @@ class UrlManagementControllerIT {
   @Test
   void shouldShortenAndThenExpandShortUrl() throws JsonProcessingException {
     //Arrange
-    String longUrl = "https://example.com";
-    ShortenUrlRequest request = new ShortenUrlRequest(longUrl);
+    String originalUrl = "https://example.com";
+    ShortenUrlRequest request = new ShortenUrlRequest(originalUrl);
 
     //Act: Send POST request to shorten the URL
     String apiResponseBody = webTestClient.post()
@@ -98,12 +98,14 @@ class UrlManagementControllerIT {
 
     //Assert: Retrieve original long URL using the shortcode
     webTestClient.get()
-        .uri("/api/v1/short-urls/{shortUrl}", shortCode)
+        .uri("/api/v1/short-urls/{shortCode}", shortCode)
         .exchange()
         .expectStatus().isOk()
         .expectBody()
         .jsonPath("$.status").isEqualTo("SUCCESS")
-        .jsonPath("$.data.longUrl").isEqualTo(longUrl);
+        .jsonPath("$.data.shortCode").isEqualTo(shortCode)
+        .jsonPath("$.data.shortUrl").isEqualTo(shortUrl)
+        .jsonPath("$.data.originalUrl").isEqualTo(originalUrl);
   }
 
   public <T> T parse(String json, TypeReference<T> typeRef) throws JsonProcessingException {

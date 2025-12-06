@@ -21,11 +21,11 @@ public class UrlRedirectController {
 
   private final UrlMappingService urlMappingService;
 
-  @GetMapping(value = "/{shortUrl}", produces = APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/{shortCode}", produces = APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> redirect(
-      @NotBlank @Size(min = 7, max = 7) @PathVariable String shortUrl) {
+      @NotBlank @Size(min = 7, max = 7) @PathVariable("shortCode") String shortCode) {
 
-    String originalUrl = urlMappingService.resolveShortUrl(shortUrl);
+    String originalUrl = urlMappingService.resolveShortCode(shortCode);
 
     return ResponseEntity.status(HttpStatus.FOUND)
         .location(URI.create(originalUrl))

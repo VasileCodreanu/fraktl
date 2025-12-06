@@ -31,6 +31,9 @@ public class ShortenedUrl {
   )
   private Long id;
 
+  @Column(name = "short_code", nullable = false, unique = true)
+  private String shortCode;
+
   @Column(name = "short_url", nullable = false, unique = true)
   private String shortUrl;
 
@@ -40,13 +43,13 @@ public class ShortenedUrl {
   @Column(name = "created_at")
   private LocalDateTime createdAt;
 
-  @Column(name = "expiration_at")
-  private LocalDateTime expirationAt;
+  @Column(name = "expires_at")
+  private LocalDateTime expiresAt;
 
   @PrePersist
   public void prePersist() {
     this.createdAt = LocalDateTime.now();
-    this.expirationAt = createdAt.plusDays(100);
+    this.expiresAt = createdAt.plusDays(100);
   }
 
   @Override

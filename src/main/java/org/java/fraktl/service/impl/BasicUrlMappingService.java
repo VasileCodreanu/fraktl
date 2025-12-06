@@ -1,13 +1,16 @@
 package org.java.fraktl.service.impl;
 
 
+import static org.java.fraktl.service.impl.helpers.UrlConstants.BASE_URL;
+
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.java.fraktl.dto.ShortUrlResponse;
 import org.java.fraktl.repository.UrlRepository;
 import org.java.fraktl.exceptions.errorModel.customExceptions.ResourceNotFoundException;
 import org.java.fraktl.entity.ShortenedUrl;
 import org.java.fraktl.dto.ShortenUrlRequest;
 import org.java.fraktl.service.UrlMappingService;
-import org.java.fraktl.service.impl.helpers.UrlExpanderService;
 import org.java.fraktl.service.impl.helpers.UrlShortenerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,35 +20,58 @@ import org.springframework.transaction.annotation.Transactional;
 public class BasicUrlMappingService implements UrlMappingService {
 
   private final UrlShortenerService shortenerService;
-  private final UrlExpanderService expanderService;
-
   private final UrlRepository urlRepository;
 
+  @Override
   @Transactional
-  public String createShortUrl(ShortenUrlRequest request) {
+  public ShortUrlResponse createShortUrl(ShortenUrlRequest request) {
 
-    ShortenedUrl shortenedUrl = new ShortenedUrl();
+    Optional<ShortenedUrl> existingShortenedUrl = urlRepository.findByOriginalUrl(request.originalUrl());
+    if (existingShortenedUrl.isPresent()) {
+      return ShortUrlResponse.from(existingShortenedUrl.get());
+    }
 
-    urlRepository.save(shortenedUrl);
-    String shortUrl = shortenerService.createShortUrl(shortenedUrl.getId());
+    ShortenedUrl entity = new ShortenedUrl();
+    entity.setOriginalUrl(request.originalUrl());
 
-    shortenedUrl.setOriginalUrl(request.originalUrl());
-    shortenedUrl.setShortUrl(shortUrl);
+    urlRepository.save(entity);
 
-    urlRepository.save(shortenedUrl);
+    String shortUrl = shortenerService.createShortUrl(entity.getId());
 
-    return shortUrl;
+    entity.setShortUrl(shortUrl);
+    entity.setShortCode(extractShortCode(shortUrl));
+
+    return ShortUrlResponse.from(urlRepository.save(entity));
+
   }
 
+  @Override
   @Transactional(readOnly = true)
-  public String resolveShortUrl(String shortUrl) {
+  public String resolveShortCode(String shortCode) {
 
-    long id = expanderService.expand(shortUrl);
-
-    ShortenedUrl shortenedUrl = urlRepository.findById(id)
+    ShortenedUrl shortenedUrl = urlRepository.findByShortCode(shortCode)
         .orElseThrow(() -> new ResourceNotFoundException(
-            String.format("Resource with short-url equal to: '%s' is not present.", shortUrl)));
+            String.format("Resource with short-code equal to: '%s' is not present.", shortCode)));
 
     return shortenedUrl.getOriginalUrl();
   }
+
+  @Override
+  @Transactional(readOnly = true)
+  public ShortUrlResponse getShortUrlDetailsByShortCode(String shortCode) {
+
+    ShortenedUrl shortenedUrl = urlRepository.findByShortCode(shortCode)
+        .orElseThrow(() -> new ResourceNotFoundException(
+            String.format("Resource with short-code equal to: '%s' is not present.", shortCode)));
+
+    return ShortUrlResponse.from(shortenedUrl);
+  }
+
+  private String extractShortCode(String shortUrl) {
+    if (shortUrl == null || !shortUrl.startsWith(BASE_URL)) {
+      throw new IllegalArgumentException("Invalid short-url format");
+    }
+    return shortUrl.substring(BASE_URL.length());
+  }
+
 }

@@ -12,7 +12,6 @@ import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.java.fraktl.service.UrlMappingService;
 import org.java.fraktl.dto.common.ApiResponse;
-import org.java.fraktl.dto.LongUrlResponse;
 import org.java.fraktl.dto.ShortUrlResponse;
 import org.java.fraktl.dto.ShortenUrlRequest;
 import org.springframework.http.ResponseEntity;
@@ -36,23 +35,20 @@ public class UrlManagementController {
   public ResponseEntity<ApiResponse<ShortUrlResponse>> createShortUrl(
       @Valid @RequestBody ShortenUrlRequest shortenUrlRequest) {
 
-    String shortUrl = urlMappingService.createShortUrl(shortenUrlRequest);
-    ShortUrlResponse responseBody = new ShortUrlResponse(shortUrl);
+    ShortUrlResponse responseBody = urlMappingService.createShortUrl(shortenUrlRequest);
+
     ApiResponse<ShortUrlResponse> apiResponse = new ApiResponse<>(SUCCESS, responseBody);
 
     return new ResponseEntity<>(apiResponse, CREATED);
   }
 
-  @GetMapping(value = "/{shortUrl}", produces = APPLICATION_JSON_VALUE)
-  public ResponseEntity<ApiResponse<LongUrlResponse>> getShortUrlDetails(
-      @NotBlank @Size(min = 7, max = 7) @PathVariable("shortUrl") String shortUrl) {
+  @GetMapping(value = "/{shortCode}", produces = APPLICATION_JSON_VALUE)
+  public ResponseEntity<ApiResponse<ShortUrlResponse>> getShortCodeDetails(
+      @NotBlank @Size(min = 7, max = 7) @PathVariable("shortCode") String shortCode) {
 
-    String longUrl = urlMappingService.resolveShortUrl(shortUrl);
-//    ShortUrlResponse response = urlMappingService.getShortUrlDetails(shortCode/shortUrl);
+    ShortUrlResponse responseBody = urlMappingService.getShortUrlDetailsByShortCode(shortCode);
 
-
-    LongUrlResponse responseBody = new LongUrlResponse(longUrl);
-    ApiResponse<LongUrlResponse> apiResponse = new ApiResponse<>(SUCCESS, responseBody);
+    ApiResponse<ShortUrlResponse> apiResponse = new ApiResponse<>(SUCCESS, responseBody);
 
     return new ResponseEntity<>(apiResponse, OK);
   }

@@ -6,20 +6,20 @@ This API allows you to shorten long URLs, expand shortened URLs, and test redire
 
 ### 1. Shorten a Long URL
 
-Use the `shorten-long-url.http` file to send a request that converts a long URL into a shortened one.
+Use the `create-short-url.http` file to send a request that converts a long URL into a shortened one.
 
-- Open the file: `shorten-long-url.http`
+- Open the file: `create-short-url.http`
 - Send the request to generate a short URL.
-- You’ll receive a response with a shortened version of the URL.
+- You’ll receive a response with a 'shortUrl' version of the 'originalUrl'.
 
 ---
 
 ### 2. Expand a Short URL
 
-Use the `expand-short-url.http` file to retrieve the original long URL from a short one.
+Use the `get-url-details-by-short-code.http` file to retrieve the original long URL from a short url.
 
-- Open the file: `expand-short-url.http`
-- Modify the request by supplying the short URL as a parameter.
+- Open the file: `get-url-details-by-short-code.http`
+- Modify the request by supplying the 'shortUrl' as a parameter.
 - Send the request to receive the corresponding long URL.
 
 ---
