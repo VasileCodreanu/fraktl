@@ -1,4 +1,4 @@
-package org.java.fraktl.dto;
+package org.java.fraktl.dto.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

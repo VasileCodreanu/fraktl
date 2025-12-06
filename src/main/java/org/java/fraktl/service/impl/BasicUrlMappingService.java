@@ -4,9 +4,9 @@ package org.java.fraktl.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.java.fraktl.repository.UrlRepository;
 import org.java.fraktl.exceptions.errorModel.customExceptions.ResourceNotFoundException;
-import org.java.fraktl.entity.UrlMapping;
-import org.java.fraktl.dto.short_url.ShortenUrlRequest;
-import org.java.fraktl.service.UrlService;
+import org.java.fraktl.entity.ShortenedUrl;
+import org.java.fraktl.dto.ShortenUrlRequest;
+import org.java.fraktl.service.UrlMappingService;
 import org.java.fraktl.service.impl.helpers.UrlExpanderService;
 import org.java.fraktl.service.impl.helpers.UrlShortenerService;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class BasicUrlService implements UrlService {
+public class BasicUrlMappingService implements UrlMappingService {
 
   private final UrlShortenerService shortenerService;
   private final UrlExpanderService expanderService;
@@ -22,30 +22,30 @@ public class BasicUrlService implements UrlService {
   private final UrlRepository urlRepository;
 
   @Transactional
-  public String shortenUrl(ShortenUrlRequest request) {
+  public String createShortUrl(ShortenUrlRequest request) {
 
-    UrlMapping urlMapping = new UrlMapping();
+    ShortenedUrl shortenedUrl = new ShortenedUrl();
 
-    urlRepository.save(urlMapping);
-    String shortUrl = shortenerService.createShortUrl(urlMapping.getId());
+    urlRepository.save(shortenedUrl);
+    String shortUrl = shortenerService.createShortUrl(shortenedUrl.getId());
 
-    urlMapping.setOriginalUrl(request.originalUrl());
-    urlMapping.setShortUrl(shortUrl);
+    shortenedUrl.setOriginalUrl(request.originalUrl());
+    shortenedUrl.setShortUrl(shortUrl);
 
-    urlRepository.save(urlMapping);
+    urlRepository.save(shortenedUrl);
 
     return shortUrl;
   }
 
   @Transactional(readOnly = true)
-  public String expandUrl(String shortUrl) {
+  public String resolveShortUrl(String shortUrl) {
 
     long id = expanderService.expand(shortUrl);
 
-    UrlMapping urlMapping = urlRepository.findById(id)
+    ShortenedUrl shortenedUrl = urlRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException(
             String.format("Resource with short-url equal to: '%s' is not present.", shortUrl)));
 
-    return urlMapping.getOriginalUrl();
+    return shortenedUrl.getOriginalUrl();
   }
 }

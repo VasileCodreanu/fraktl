@@ -1,7 +1,7 @@
 package org.java.fraktl.controller;
 
 
-import static org.java.fraktl.dto.ResponseStatus.SUCCESS;
+import static org.java.fraktl.dto.common.ResponseStatus.SUCCESS;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -10,11 +10,11 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
-import org.java.fraktl.service.UrlService;
-import org.java.fraktl.dto.ApiResponse;
-import org.java.fraktl.dto.long_url.LongUrlResponse;
-import org.java.fraktl.dto.short_url.ShortUrlResponse;
-import org.java.fraktl.dto.short_url.ShortenUrlRequest;
+import org.java.fraktl.service.UrlMappingService;
+import org.java.fraktl.dto.common.ApiResponse;
+import org.java.fraktl.dto.LongUrlResponse;
+import org.java.fraktl.dto.ShortUrlResponse;
+import org.java.fraktl.dto.ShortenUrlRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,15 +28,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("${api.prefix.v1}/short-urls")
 @Validated
-public class UrlController {
+public class UrlManagementController {
 
-  private final UrlService urlService;
+  private final UrlMappingService urlMappingService;
 
   @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-  public ResponseEntity<ApiResponse<ShortUrlResponse>> shortenUrl(
+  public ResponseEntity<ApiResponse<ShortUrlResponse>> createShortUrl(
       @Valid @RequestBody ShortenUrlRequest shortenUrlRequest) {
 
-    String shortUrl = urlService.shortenUrl(shortenUrlRequest);
+    String shortUrl = urlMappingService.createShortUrl(shortenUrlRequest);
     ShortUrlResponse responseBody = new ShortUrlResponse(shortUrl);
     ApiResponse<ShortUrlResponse> apiResponse = new ApiResponse<>(SUCCESS, responseBody);
 
@@ -44,10 +44,13 @@ public class UrlController {
   }
 
   @GetMapping(value = "/{shortUrl}", produces = APPLICATION_JSON_VALUE)
-  public ResponseEntity<ApiResponse<LongUrlResponse>> expandShortUrl(
+  public ResponseEntity<ApiResponse<LongUrlResponse>> getShortUrlDetails(
       @NotBlank @Size(min = 7, max = 7) @PathVariable("shortUrl") String shortUrl) {
 
-    String longUrl = urlService.expandUrl(shortUrl);
+    String longUrl = urlMappingService.resolveShortUrl(shortUrl);
+//    ShortUrlResponse response = urlMappingService.getShortUrlDetails(shortCode/shortUrl);
+
+
     LongUrlResponse responseBody = new LongUrlResponse(longUrl);
     ApiResponse<LongUrlResponse> apiResponse = new ApiResponse<>(SUCCESS, responseBody);
 

@@ -1,4 +1,4 @@
-package org.java.fraktl.dto.short_url;
+package org.java.fraktl.dto;
 
 import java.time.LocalDateTime;
 

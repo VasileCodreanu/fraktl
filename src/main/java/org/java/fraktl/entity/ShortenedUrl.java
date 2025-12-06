@@ -16,17 +16,17 @@ import lombok.Setter;
 import org.hibernate.Hibernate;
 
 @Entity
-@Table(name = "url_mappings")
+@Table(name = "shortened_urls")
 @Getter
 @Setter
 @NoArgsConstructor
-public class UrlMapping {
+public class ShortenedUrl {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "url_seq")
   @SequenceGenerator(
       name = "url_seq",
-      sequenceName = "url_mapping_sequence",
+      sequenceName = "shortened_urls_sequence",
       allocationSize = 1
   )
   private Long id;
@@ -53,7 +53,7 @@ public class UrlMapping {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-    UrlMapping that = (UrlMapping) o;
+    ShortenedUrl that = (ShortenedUrl) o;
     return id != null && Objects.equals(id, that.id);
   }
 

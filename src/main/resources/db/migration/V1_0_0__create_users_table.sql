@@ -1,4 +1,4 @@
-CREATE TABLE url_mappings
+CREATE TABLE shortened_urls
 (
     id            BIGINT PRIMARY KEY,
     short_url     VARCHAR(50) UNIQUE,
@@ -7,5 +7,5 @@ CREATE TABLE url_mappings
     expiration_at TIMESTAMPTZ
 );
 
-DROP SEQUENCE IF EXISTS url_mapping_sequence;
-CREATE SEQUENCE url_mapping_sequence START 1000000000000;
+DROP SEQUENCE IF EXISTS shortened_urls_sequence;
+CREATE SEQUENCE shortened_urls_sequence START 1000000000000;

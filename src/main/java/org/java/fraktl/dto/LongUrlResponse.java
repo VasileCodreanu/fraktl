@@ -1,4 +1,4 @@
-package org.java.fraktl.dto.long_url;
+package org.java.fraktl.dto;
 
 
 public record LongUrlResponse(
