@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.java.fraktl.dto.ShortUrlResponse;
 import org.java.fraktl.dto.ShortenUrlRequest;
 import org.java.fraktl.dto.common.ApiResponse;
+import org.java.fraktl.dto.common.ApiResponse.ResponseStatus;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,7 @@ class UrlRedirectControllerIT {
     assertNotNull(apiResponseBody);
 
     ApiResponse<ShortUrlResponse> apiResponse = parse(apiResponseBody, new TypeReference<>() {});
-    ShortUrlResponse shortUrlResponse = apiResponse.getData();
+    ShortUrlResponse shortUrlResponse = apiResponse.data();
     String shortCode = shortUrlResponse.shortCode();
 
     // Act & Assert: Access the redirect endpoint
@@ -79,7 +80,7 @@ class UrlRedirectControllerIT {
         .exchange()
         .expectStatus().isNotFound()
         .expectBody()
-        .jsonPath("$.status").isEqualTo("FAILURE")
+        .jsonPath("$.status").isEqualTo(ResponseStatus.ERROR)
         .jsonPath("$.data.status").isEqualTo(404)
         .jsonPath("$.data.message").isEqualTo("The requested resource was not found.");
   }
@@ -95,7 +96,7 @@ class UrlRedirectControllerIT {
         .exchange()
         .expectStatus().isBadRequest()
         .expectBody()
-        .jsonPath("$.status").isEqualTo("FAILURE");
+        .jsonPath("$.status").isEqualTo(ResponseStatus.ERROR);
   }
 
   @Test
@@ -109,7 +110,7 @@ class UrlRedirectControllerIT {
         .exchange()
         .expectStatus().isBadRequest()
         .expectBody()
-        .jsonPath("$.status").isEqualTo("FAILURE");
+        .jsonPath("$.status").isEqualTo(ResponseStatus.ERROR);
   }
 
   @Test
@@ -123,7 +124,7 @@ class UrlRedirectControllerIT {
         .exchange()
         .expectStatus().isBadRequest()
         .expectBody()
-        .jsonPath("$.status").isEqualTo("FAILURE");
+        .jsonPath("$.status").isEqualTo(ResponseStatus.ERROR);
   }
 
   @Test
@@ -143,7 +144,7 @@ class UrlRedirectControllerIT {
         .getResponseBody();
 
     ApiResponse<ShortUrlResponse> apiResponse = parse(apiResponseBody, new TypeReference<>() {});
-    String shortCode = apiResponse.getData().shortCode();
+    String shortCode = apiResponse.data().shortCode();
 
     // Act & Assert: Redirect multiple times/ensure idempotency
     for (int i = 0; i < 3; i++) {
@@ -154,7 +155,6 @@ class UrlRedirectControllerIT {
           .expectHeader().valueEquals(HttpHeaders.LOCATION, originalUrl);
     }
   }
-
 
   private <T> T parse(String json, TypeReference<T> typeRef) throws JsonProcessingException {
     return objectMapper.readValue(json, typeRef);

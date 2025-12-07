@@ -10,7 +10,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.java.fraktl.dto.common.ApiResponse;
-import org.java.fraktl.dto.common.ResponseStatus;
 import org.java.fraktl.dto.ShortUrlResponse;
 import org.java.fraktl.dto.ShortenUrlRequest;
 import org.junit.jupiter.api.Tag;
@@ -54,7 +53,7 @@ class UrlManagementControllerIT {
         .exchange()
         .expectStatus().isNotFound()
         .expectBody()
-        .jsonPath("$.status").isEqualTo("FAILURE")
+        .jsonPath("$.status").isEqualTo(ApiResponse.ResponseStatus.ERROR)
         .jsonPath("$.data.status").isEqualTo(404)
         .jsonPath("$.data.message").isEqualTo("The requested resource was not found.")
         .jsonPath("$.data.debugMessage").isEqualTo(expectedDebugMessage);
@@ -83,11 +82,11 @@ class UrlManagementControllerIT {
     ApiResponse<ShortUrlResponse> apiResponse = parse(apiResponseBody, new TypeReference<>() {});
     assertNotNull(apiResponse);
 
-    String actualStatus = apiResponse.getStatus();
-    String expectedStatus = ResponseStatus.SUCCESS;
+    ApiResponse.ResponseStatus actualStatus = apiResponse.status();
+    ApiResponse.ResponseStatus expectedStatus = ApiResponse.ResponseStatus.SUCCESS;
     assertEquals(expectedStatus, actualStatus);
 
-    ShortUrlResponse shortUrlResponse = apiResponse.getData();
+    ShortUrlResponse shortUrlResponse = apiResponse.data();
     assertNotNull(shortUrlResponse);
 
     String shortUrl = shortUrlResponse.shortUrl();
@@ -102,7 +101,7 @@ class UrlManagementControllerIT {
         .exchange()
         .expectStatus().isOk()
         .expectBody()
-        .jsonPath("$.status").isEqualTo("SUCCESS")
+        .jsonPath("$.status").isEqualTo(ApiResponse.ResponseStatus.SUCCESS)
         .jsonPath("$.data.shortCode").isEqualTo(shortCode)
         .jsonPath("$.data.shortUrl").isEqualTo(shortUrl)
         .jsonPath("$.data.originalUrl").isEqualTo(originalUrl);

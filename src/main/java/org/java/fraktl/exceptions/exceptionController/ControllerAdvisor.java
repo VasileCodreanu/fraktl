@@ -1,6 +1,5 @@
 package org.java.fraktl.exceptions.exceptionController;
 
-import static org.java.fraktl.dto.common.ResponseStatus.FAILURE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -103,8 +102,7 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
   }
 
   private ResponseEntity<Object> buildResponseEntity(ApiError apiError, HttpStatus status) {
-
-    ApiResponse<ApiError> apiResponse = new ApiResponse<>(FAILURE, apiError);
+    ApiResponse<ApiError> apiResponse = ApiResponse.error(apiError);
     return new ResponseEntity<>(apiResponse, status);
   }
 }

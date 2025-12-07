@@ -1,7 +1,6 @@
 package org.java.fraktl.controller;
 
 
-import static org.java.fraktl.dto.common.ResponseStatus.SUCCESS;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -37,8 +36,7 @@ public class UrlManagementController {
 
     ShortUrlResponse responseBody = urlMappingService.createShortUrl(shortenUrlRequest);
 
-    ApiResponse<ShortUrlResponse> apiResponse = new ApiResponse<>(SUCCESS, responseBody);
-
+    ApiResponse<ShortUrlResponse> apiResponse = ApiResponse.success(responseBody);
     return new ResponseEntity<>(apiResponse, CREATED);
   }
 
@@ -48,8 +46,7 @@ public class UrlManagementController {
 
     ShortUrlResponse responseBody = urlMappingService.getShortUrlDetailsByShortCode(shortCode);
 
-    ApiResponse<ShortUrlResponse> apiResponse = new ApiResponse<>(SUCCESS, responseBody);
-
+    ApiResponse<ShortUrlResponse> apiResponse = ApiResponse.success(responseBody);
     return new ResponseEntity<>(apiResponse, OK);
   }
 }

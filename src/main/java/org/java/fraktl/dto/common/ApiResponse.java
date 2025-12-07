@@ -1,14 +1,23 @@
 package org.java.fraktl.dto.common;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
-public class ApiResponse<T> {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public record ApiResponse<T>(
+  ResponseStatus status,
+  T data
+) {
 
-  private String status;
-  private T data;
+  public enum ResponseStatus {
+    SUCCESS, ERROR
+  }
+
+  public static <T> ApiResponse<T> success(T data) {
+    return new ApiResponse<>(ResponseStatus.SUCCESS, data);
+  }
+
+  public static <T> ApiResponse<T> error(T errorData) {
+    return new ApiResponse<>(ResponseStatus.ERROR, errorData);
+  }
+
 }
