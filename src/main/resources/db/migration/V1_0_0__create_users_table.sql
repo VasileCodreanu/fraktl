@@ -22,15 +22,15 @@ CREATE TABLE url_management.shortened_urls
 );
 
 
--- Fast redirect by short code
+-- When 'short_code' are queried during redirect
 CREATE INDEX IF NOT EXISTS idx_short_code
     ON url_management.shortened_urls(short_code);
 
--- Only ACTIVE URL codes are queried during redirect
+-- When 'active short_code' are queried during redirect
 CREATE INDEX IF NOT EXISTS idx_active_shortcodes
     ON url_management.shortened_urls(short_code)
     WHERE is_active = TRUE;
 
--- Optional: Improve analytics lookups on original URLs
+-- Improve lookups on original URLs
 CREATE INDEX IF NOT EXISTS idx_original_url
     ON url_management.shortened_urls(original_url);

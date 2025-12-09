@@ -53,7 +53,7 @@
 Project includes both unit-tests and integration-tests.
 You can run them as:
 
-- Run Unit Tests Only:
+- Run **unit-tests** only:
     - Option 1: The standard Maven command for running tests in the 'test' phase
     ```bash 
         mvn clean test
@@ -64,12 +64,12 @@ You can run them as:
         mvn clean verify -DskipIntegrationTests=true
     ```
 
-- Run Unit Integration-tests Only:
+- Run **integration-tests** only:
   ```bash
     mvn clean verify -DskipUnitTests=true
   ```
 
-- Run All tests:
+- Run **all** tests:
   ```bash
     mvn clean verify
   ```
