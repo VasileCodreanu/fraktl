@@ -2,7 +2,14 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
   <artifactId>fraktl</artifactId>
+  <packaging>pom</packaging>
+  <modules>
+    <module>url-manager</module>
+    <module>common</module>
+  </modules>
+
 
   <build>
     <plugins>
@@ -215,6 +222,11 @@
       <artifactId>spring-boot-starter-data-jpa</artifactId>
       <groupId>org.springframework.boot</groupId>
     </dependency>
+    <dependency>
+      <artifactId>lombok</artifactId>
+      <groupId>org.projectlombok</groupId>
+      <optional>true</optional>
+    </dependency>
 
     <dependency>
       <artifactId>spring-boot-testcontainers</artifactId>
@@ -237,16 +249,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <artifactId>lombok</artifactId>
-      <groupId>org.projectlombok</groupId>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
       <artifactId>spring-boot-starter-test</artifactId>
       <groupId>org.springframework.boot</groupId>
       <scope>test</scope>
     </dependency>
   </dependencies>
+
   <description>URL Shortener</description>
   <groupId>org.java</groupId>
   <modelVersion>4.0.0</modelVersion>
@@ -263,7 +271,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <java.version>21</java.version>
-    <maven.compiler.release>21</maven.compiler.release>
+    <maven.compiler.release>${java.version}</maven.compiler.release>
 
     <!-- Test Configuration -->
     <skipUnitTests>false</skipUnitTests>
