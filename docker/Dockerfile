@@ -9,9 +9,11 @@ ARG OTEL_VERSION=2.21.0
 RUN wget -O /app/opentelemetry-javaagent.jar \
     https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v${OTEL_VERSION}/opentelemetry-javaagent.jar
 
-# Download dependencies
+# Copy parent POM and modules & Download dependencies
 COPY ../pom.xml ./
+COPY common ./common
 COPY url-manager ./url-manager
+
 RUN mvn dependency:go-offline -B
 
 # Build app
