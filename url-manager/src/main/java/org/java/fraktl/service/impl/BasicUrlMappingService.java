@@ -3,7 +3,6 @@ package org.java.fraktl.service.impl;
 
 import static org.java.fraktl.service.impl.helpers.UrlConstants.BASE_URL;
 
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.java.fraktl.dto.ShortUrlResponse;
 import org.java.fraktl.repository.UrlRepository;
@@ -26,45 +25,43 @@ public class BasicUrlMappingService implements UrlMappingService {
   @Transactional
   public ShortUrlResponse createShortUrl(ShortenUrlRequest request) {
 
-    Optional<ShortenedUrl> existingShortenedUrl = urlRepository.findByOriginalUrl(request.originalUrl());
-    if (existingShortenedUrl.isPresent()) {
-      return ShortUrlResponse.from(existingShortenedUrl.get());
-    }
-
-    ShortenedUrl entity = new ShortenedUrl();
-    entity.setOriginalUrl(request.originalUrl());
-
-    urlRepository.save(entity);
-
-    String shortUrl = shortenerService.createShortUrl(entity.getId());
-
-    entity.setShortUrl(shortUrl);
-    entity.setShortCode(extractShortCode(shortUrl));
-
-    return ShortUrlResponse.from(urlRepository.save(entity));
-
+    return urlRepository.findByOriginalUrl(request.originalUrl())
+        .map(ShortUrlResponse::from)
+        .orElseGet(() -> {
+          ShortenedUrl entity = persistOriginalUrl(request.originalUrl());
+          enrichWithShortUrl(entity);
+          return ShortUrlResponse.from(entity);
+        });
   }
 
   @Override
   @Transactional(readOnly = true)
   public String resolveShortCode(String shortCode) {
-
-    ShortenedUrl shortenedUrl = urlRepository.findByShortCode(shortCode)
-        .orElseThrow(() -> new ResourceNotFoundException(
-            String.format("Resource with short-code equal to: '%s' is not present.", shortCode)));
-
-    return shortenedUrl.getOriginalUrl();
+    return findByShortCode(shortCode).getOriginalUrl();
   }
 
   @Override
   @Transactional(readOnly = true)
   public ShortUrlResponse getShortUrlDetailsByShortCode(String shortCode) {
+    return ShortUrlResponse.from(findByShortCode(shortCode));
+  }
 
-    ShortenedUrl shortenedUrl = urlRepository.findByShortCode(shortCode)
+  private ShortenedUrl persistOriginalUrl(String originalUrl) {
+    ShortenedUrl entity = new ShortenedUrl();
+    entity.setOriginalUrl(originalUrl);
+    return urlRepository.save(entity);
+  }
+
+  private void enrichWithShortUrl(ShortenedUrl entity) {
+    String shortUrl = shortenerService.createShortUrl(entity.getId());
+    entity.setShortUrl(shortUrl);
+    entity.setShortCode(extractShortCode(shortUrl));
+  }
+
+  private ShortenedUrl findByShortCode(String shortCode) {
+    return urlRepository.findByShortCode(shortCode)
         .orElseThrow(() -> new ResourceNotFoundException(
-            String.format("Resource with short-code equal to: '%s' is not present.", shortCode)));
-
-    return ShortUrlResponse.from(shortenedUrl);
+            "Resource with short-code equal to: '%s' is not present.".formatted(shortCode)));
   }
 
   private String extractShortCode(String shortUrl) {
