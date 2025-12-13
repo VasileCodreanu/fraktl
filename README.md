@@ -55,22 +55,22 @@ You can run them as:
 
 - Run **unit-tests** only:
     - Option 1: The standard Maven command for running tests in the 'test' phase
-    ```bash 
-        mvn clean test
+    ```bash
+        ./mvnw clean test
     ```
 
     - Option 2: Using the 'verify' phase and explicitly skipping integration tests
     ```bash 
-        mvn clean verify -DskipIntegrationTests=true
+        ./mvnw clean verify -DskipIntegrationTests=true
     ```
 
 - Run **integration-tests** only:
   ```bash
-    mvn clean verify -DskipUnitTests=true
+    ./mvnw clean verify -DskipUnitTests=true
   ```
 
 - Run **all** tests:
   ```bash
-    mvn clean verify
+    ./mvnw clean verify
   ```
 
