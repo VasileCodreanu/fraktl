@@ -16,8 +16,7 @@ public final class UrlEventFactory {
     return baseEvent(
         UrlEventType.CLICK,
         shortCode,
-        ctx,
-        Map.of()
+        ctx
     );
   }
 
@@ -28,16 +27,15 @@ public final class UrlEventFactory {
     return baseEvent(
         UrlEventType.CREATED,
         shortCode,
-        ctx,
-        Map.of()
+        ctx
     );
   }
   
   private static UrlEvent baseEvent(
       UrlEventType type,
       String shortCode,
-      RequestContext ctx,
-      Map<String, String> metadata
+      RequestContext ctx
+      //Map<String, String> metadata
   ) {
     return new UrlEvent(
 //                UUID.randomUUID()
@@ -47,8 +45,7 @@ public final class UrlEventFactory {
         ctx.ip(),
         ctx.userAgent(),
         ctx.referrer(),
-        Instant.now(),
-        metadata
+        Instant.now()
     );
   }
 }

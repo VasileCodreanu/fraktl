@@ -1,20 +1,20 @@
-package org.java.fraktl.analytics.service;
+package org.java.fraktl.analytics.adapter;
 
-import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
+import org.java.fraktl.analytics.service.AnalyticsService;
 import org.java.fraktl.common.event.UrlEvent;
 import org.java.fraktl.common.ports.out.AnalyticsEventPublisherPort;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class InMemoryAnalyticsEventPublisher implements AnalyticsEventPublisherPort {
+public class JpaAnalyticsEventPublisher implements AnalyticsEventPublisherPort {
+
+  private final AnalyticsService analyticsService;
 
   @Override
   public void publishUrlEvent(UrlEvent event) {
-    ArrayList<UrlEvent> urlEvents = new ArrayList<>();
-    urlEvents.add(event);
-    System.out.println(urlEvents);
-
+    analyticsService.record(event);
   }
+
 }

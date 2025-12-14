@@ -1,7 +1,6 @@
 package org.java.fraktl.common.event;
 
 import java.time.Instant;
-import java.util.Map;
 
 public record UrlEvent(
 
@@ -11,8 +10,8 @@ public record UrlEvent(
     String ip,
     String userAgent,
     String referrer,
-    Instant occurredAt,
-    Map<String, String> metadata
+    Instant occurredAt
+    //Map<String, String> metadata
 
 ) {
 
