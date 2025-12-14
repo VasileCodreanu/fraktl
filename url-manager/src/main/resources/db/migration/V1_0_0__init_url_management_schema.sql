@@ -3,7 +3,7 @@ CREATE SCHEMA IF NOT EXISTS url_management;
 
 DROP SEQUENCE IF EXISTS url_management.shortened_urls_sequence;
 CREATE SEQUENCE url_management.shortened_urls_sequence
-    START 1000000000000
+    START 1000000000005
     INCREMENT BY 5;
 
 CREATE TABLE url_management.shortened_urls
