@@ -10,7 +10,7 @@ public class UrlEventMapper {
     public UrlEventEntity toEntity(UrlEvent event) {
       return new UrlEventEntity(
           event.type().name(),
-          event.shortUrl(),
+          event.shortCode(),
           event.userId(),
           event.ip(),
           event.userAgent(),

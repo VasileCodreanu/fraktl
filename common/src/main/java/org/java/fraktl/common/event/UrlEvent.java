@@ -5,7 +5,7 @@ import java.time.Instant;
 public record UrlEvent(
 
     UrlEventType type,
-    String shortUrl,
+    String shortCode,
     String userId,
     String ip,
     String userAgent,

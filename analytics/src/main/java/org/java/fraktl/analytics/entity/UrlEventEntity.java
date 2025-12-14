@@ -17,8 +17,8 @@ public class UrlEventEntity {
   @Column(name = "event_type", nullable = false)
   private String eventType;
 
-  @Column(name = "short_url_id", nullable = false)
-  private String shortUrlId;
+  @Column(name = "short_code", nullable = false)
+  private String shortCode;
 
   private String userId;
   private String ipHash;
@@ -32,10 +32,10 @@ public class UrlEventEntity {
   @Column(nullable = false)
   private Instant occurredAt;
 
-  public UrlEventEntity(String eventType, String shortUrlId, String userId, String ipHash,
+  public UrlEventEntity(String eventType, String shortCode, String userId, String ipHash,
       String userAgent, String referrer, Instant occurredAt) {
     this.eventType = eventType;
-    this.shortUrlId = shortUrlId;
+    this.shortCode = shortCode;
     this.userId = userId;
     this.ipHash = ipHash;
     this.userAgent = userAgent;

@@ -5,8 +5,8 @@ CREATE TABLE url_analytics.url_events
 (
     id               BIGSERIAL PRIMARY KEY,
 
-    event_type       VARCHAR(32) NOT NULL,
-    short_url_id     VARCHAR(16) NOT NULL,
+    event_type       VARCHAR(10) NOT NULL,
+    short_code       VARCHAR(10) NOT NULL,
 
     user_id          VARCHAR(128),
     ip_hash          VARCHAR(128),
@@ -14,10 +14,7 @@ CREATE TABLE url_analytics.url_events
     user_agent       TEXT,
     referrer         TEXT,
 
-    occurred_at      TIMESTAMPTZ NOT NULL,
-    metadata         JSONB,
-
-    created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    occurred_at      TIMESTAMPTZ NOT NULL
 );
 
 
