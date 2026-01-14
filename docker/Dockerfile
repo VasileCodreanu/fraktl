@@ -13,6 +13,7 @@ RUN wget -O /app/opentelemetry-javaagent.jar \
 COPY ../pom.xml ./
 COPY common ./common
 COPY url-manager ./url-manager
+COPY analytics ./analytics
 
 RUN mvn dependency:go-offline -B
 
