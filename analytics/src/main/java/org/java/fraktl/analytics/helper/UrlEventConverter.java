@@ -1,14 +1,14 @@
 package org.java.fraktl.analytics.helper;
 
-import org.java.fraktl.analytics.entity.UrlEventEntity;
-import org.java.fraktl.common.event.UrlEvent;
+import org.java.fraktl.analytics.entity.UrlEvent;
+import org.java.fraktl.common.event.UrlEventMessage;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UrlEventMapper {
+public class UrlEventConverter {
 
-    public UrlEventEntity toEntity(UrlEvent event) {
-      return new UrlEventEntity(
+    public UrlEvent toEntity(UrlEventMessage event) {
+      return new UrlEvent(
           event.type().name(),
           event.shortCode(),
           event.userId(),

@@ -2,7 +2,7 @@ package org.java.fraktl.common.event;
 
 import java.time.Instant;
 
-public record UrlEvent(
+public record UrlEventMessage(
 
     UrlEventType type,
     String shortCode,

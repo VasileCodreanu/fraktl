@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(schema = "url_analytics", name = "url_events")
-public class UrlEventEntity {
+public class UrlEvent {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +32,7 @@ public class UrlEventEntity {
   @Column(nullable = false)
   private Instant occurredAt;
 
-  public UrlEventEntity(String eventType, String shortCode, String userId, String ipHash,
+  public UrlEvent(String eventType, String shortCode, String userId, String ipHash,
       String userAgent, String referrer, Instant occurredAt) {
     this.eventType = eventType;
     this.shortCode = shortCode;

@@ -1,9 +1,9 @@
 package org.java.fraktl.analytics.service;
 
-import org.java.fraktl.common.event.UrlEvent;
+import org.java.fraktl.common.event.UrlEventMessage;
 
 public interface AnalyticsService {
 
-  void record(UrlEvent event);
+  void record(UrlEventMessage event);
 
 }

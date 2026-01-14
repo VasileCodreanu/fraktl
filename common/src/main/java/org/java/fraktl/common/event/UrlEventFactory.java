@@ -1,7 +1,6 @@
 package org.java.fraktl.common.event;
 
 import java.time.Instant;
-import java.util.Map;
 import org.java.fraktl.common.context.RequestContext;
 
 public final class UrlEventFactory {
@@ -9,7 +8,7 @@ public final class UrlEventFactory {
   private UrlEventFactory() {
   }
 
-  public static UrlEvent click(
+  public static UrlEventMessage click(
       String shortCode,
       RequestContext ctx
   ) {
@@ -20,7 +19,7 @@ public final class UrlEventFactory {
     );
   }
 
-  public static UrlEvent created(
+  public static UrlEventMessage created(
       String shortCode,
       RequestContext ctx
   ) {
@@ -31,13 +30,13 @@ public final class UrlEventFactory {
     );
   }
   
-  private static UrlEvent baseEvent(
+  private static UrlEventMessage baseEvent(
       UrlEventType type,
       String shortCode,
       RequestContext ctx
       //Map<String, String> metadata
   ) {
-    return new UrlEvent(
+    return new UrlEventMessage(
 //                UUID.randomUUID()
         type,
         shortCode,

@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.java.fraktl.common.context.RequestContext;
-import org.java.fraktl.common.event.UrlEvent;
+import org.java.fraktl.common.event.UrlEventMessage;
 import org.java.fraktl.common.event.UrlEventFactory;
 import org.java.fraktl.common.ports.out.AnalyticsEventPublisherPort;
 import org.java.fraktl.service.UrlMappingService;
@@ -36,8 +36,8 @@ public class UrlRedirectController {
 
     //TODO: Async later
     RequestContext ctx = RequestContext.from(request);
-    UrlEvent urlEvent = UrlEventFactory.click(shortCode, ctx);
-    analyticsEventPublisher.publishUrlEvent(urlEvent);
+    UrlEventMessage urlEventMessage = UrlEventFactory.click(shortCode, ctx);
+    analyticsEventPublisher.publishUrlEvent(urlEventMessage);
 
     return ResponseEntity.status(HttpStatus.FOUND)
         .location(URI.create(originalUrl))
