@@ -10,7 +10,7 @@ import org.java.fraktl.common.exceptions.errorModel.customExceptions.ResourceNot
 import org.java.fraktl.entity.ShortenedUrl;
 import org.java.fraktl.dto.ShortenUrlRequest;
 import org.java.fraktl.service.UrlMappingService;
-import org.java.fraktl.service.impl.helpers.UrlShortenerService;
+import org.java.fraktl.service.impl.helpers.UrlShortener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class BasicUrlMappingService implements UrlMappingService {
 
-  private final UrlShortenerService shortenerService;
+  private final UrlShortener shortenerService;
   private final UrlRepository urlRepository;
 
   @Override

@@ -4,7 +4,7 @@ import static org.java.fraktl.service.impl.helpers.UrlConstants.BASE_URL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-import org.java.fraktl.service.impl.helpers.UrlExpanderService;
+import org.java.fraktl.service.impl.helpers.UrlExpander;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -12,13 +12,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 @Tag("unit")
-class UrlExpanderServiceTest {
+class UrlExpanderTest {
 
-  private UrlExpanderService urlExpanderService;
+  private UrlExpander urlExpander;
 
   @BeforeEach
   void setUp() {
-    urlExpanderService = new UrlExpanderService();
+    urlExpander = new UrlExpander();
   }
 
   @ParameterizedTest
@@ -32,7 +32,7 @@ class UrlExpanderServiceTest {
     String shortUrl = BASE_URL + shortCode;
 
     //Act
-    long result = urlExpanderService.expand(shortUrl);
+    long result = urlExpander.expand(shortUrl);
 
     //Assert
     assertNotEquals(0, result, "Expanded ID should not be zero");
@@ -43,7 +43,7 @@ class UrlExpanderServiceTest {
   void testExpand_withValidShortUrls() {
     String shortUrl = BASE_URL + "hBxM5A4";
 
-    long result = urlExpanderService.expand(shortUrl);
+    long result = urlExpander.expand(shortUrl);
 
     assertEquals(1_000_000_000_000L, result, "Expanded ID should match expected large value");
   }

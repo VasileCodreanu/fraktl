@@ -8,19 +8,19 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.java.fraktl.service.impl.helpers.UrlShortenerService;
+import org.java.fraktl.service.impl.helpers.UrlShortener;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @Tag("unit")
-class UrlShortenerServiceTest {
+class UrlShortenerTest {
 
-  private UrlShortenerService urlShortenerService;
+  private UrlShortener urlShortener;
 
   @BeforeEach
   void setUp() {
-    urlShortenerService = new UrlShortenerService();
+    urlShortener = new UrlShortener();
   }
 
   @Test
@@ -29,7 +29,7 @@ class UrlShortenerServiceTest {
     long id = 1_000_000_000_000L;
 
     //Act
-    String shortUrl = urlShortenerService.createShortUrl(id);
+    String shortUrl = urlShortener.createShortUrl(id);
 
     //Assert
     assertNotNull(shortUrl);
@@ -46,7 +46,7 @@ class UrlShortenerServiceTest {
   void testCreateShortUrl_idTooSmall_throwsException() {
     //Arrange - Act
     Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-      urlShortenerService.createShortUrl(99999999999L); // Less than threshold
+      urlShortener.createShortUrl(99999999999L); // Less than threshold
     });
 
     //Assert

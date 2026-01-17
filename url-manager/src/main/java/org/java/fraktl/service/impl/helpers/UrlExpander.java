@@ -4,10 +4,7 @@ package org.java.fraktl.service.impl.helpers;
 import static org.java.fraktl.service.impl.helpers.UrlConstants.BASE_URL;
 import static org.java.fraktl.service.impl.helpers.UrlConstants.CHAR_SET;
 
-import org.springframework.stereotype.Service;
-
-@Service
-public class UrlExpanderService {
+public class UrlExpander {
 
   public long expand(String shortUrl) {
     String code = shortUrl.replace(BASE_URL, "");

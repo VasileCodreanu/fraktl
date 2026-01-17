@@ -4,10 +4,7 @@ import static org.java.fraktl.service.impl.helpers.UrlConstants.BASE_URL;
 import static org.java.fraktl.service.impl.helpers.UrlConstants.CHAR_SET;
 import static org.java.fraktl.service.impl.helpers.UrlConstants.SHORT_URL_LENGTH;
 
-import org.springframework.stereotype.Service;
-
-@Service
-public class UrlShortenerService {
+public class UrlShortener {
 
   public String createShortUrl(Long id) {
     if (id == null || id < 100000000000L) {

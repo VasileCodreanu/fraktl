@@ -2,9 +2,7 @@ package org.java.fraktl.analytics.helper;
 
 import org.java.fraktl.analytics.entity.UrlEvent;
 import org.java.fraktl.common.event.UrlEventMessage;
-import org.springframework.stereotype.Component;
 
-@Component
 public class UrlEventConverter {
 
     public UrlEvent toEntity(UrlEventMessage event) {

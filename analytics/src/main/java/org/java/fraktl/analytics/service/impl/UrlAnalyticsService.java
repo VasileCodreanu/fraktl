@@ -13,12 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class UrlAnalyticsService implements AnalyticsService {
 
   private final UrlEventRepository repository;
-  private final UrlEventConverter mapper;
+  private final UrlEventConverter converter;
 
   @Transactional
   @Override
   public void record(UrlEventMessage eventMessage) {
-    repository.save(mapper.toEntity(eventMessage));
+    repository.save(converter.toEntity(eventMessage));
   }
 
 }
