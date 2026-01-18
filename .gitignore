@@ -7,7 +7,7 @@ private/
 
 # IDEA
 .idea/
-out/
+/out/
 output/
 **/build/
 
