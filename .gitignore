@@ -36,8 +36,6 @@ output/
 *.log-*.gz
 logs/
 
-!.mvn/wrapper/maven-wrapper.jar
-
 ### STS ###
 .apt_generated
 .classpath
@@ -108,7 +106,6 @@ pom.xml.next
 release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
-.mvn/timing.properties
 
 
 #
@@ -141,7 +138,6 @@ misc/services/camel/de-metas-camel-shipping/tmp/
  ## Maven
  ##############################
  pom.xml.bak
- .mvn/wrapper/maven-wrapper.jar
 
  ##############################
  ## Gradle
@@ -182,8 +178,10 @@ misc/services/camel/de-metas-camel-shipping/tmp/
 Thumbs.db
 
 # Maven
-.mvn/
-!/.mvn/wrapper/maven-wrapper.jar
+.mvn/*
+!.mvn/wrapper/
+!.mvn/wrapper/maven-wrapper.properties
+
 
 # Gradle
 .gradle/
