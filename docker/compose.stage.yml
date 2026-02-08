@@ -11,9 +11,10 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: ${PROFILES_ACTIVE}
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${DB_NAME}
-      SPRING_DATASOURCE_USERNAME: ${DB_USER}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATASOURCE_USERNAME: ${DB_APP_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_APP_PASSWORD}
       SPRING_APPLICATION_NAME: ${SERVICE_NAME}
+
       # OpenTelemetry configuration
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
       OTEL_EXPORTER_OTLP_PROTOCOL: grpc
@@ -24,13 +25,6 @@ services:
       OTEL_INSTRUMENTATION_LOGBACK_APPENDER_EXPERIMENTAL_CAPTURE_KEY_VALUE_PAIR_ATTRIBUTES: true
       OTEL_INSTRUMENTATION_LOGBACK_APPENDER_EXPERIMENTAL_CAPTURE_LOGGER_CONTEXT: true
 
-    #    healthcheck:
-    #      test: ["CMD-SHELL", "curl -fs http://localhost:8080/actuator/health || exit 1"]
-    #      interval: 10s
-    #      timeout: 10s
-    #      start_period: 30s
-    #      retries: 3
-
     ports:
       - "8090:8090"
     networks:
@@ -38,6 +32,8 @@ services:
       - monitoring
     depends_on:
       db:
+        condition: service_healthy
+      keycloak:
         condition: service_healthy
       otel-collector:
         condition: service_started
@@ -50,20 +46,64 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_ADMIN_USER}
+      POSTGRES_PASSWORD: ${DB_ADMIN_PASSWORD}
       PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
     volumes:
+      - ./db/init:/docker-entrypoint-initdb.d
       - pg-data:/var/lib/postgresql/data/pgdata
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_ADMIN_USER} -d ${DB_NAME}" ]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 5s
     networks:
       - shortener-backend
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.5.2
+    container_name: keycloak
+    command: start-dev
+    environment:
+      # Admin user
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${DB_KC_ADMIN_USER}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${DB_KC_ADMIN_PASSWORD}
+
+      # Database configuration
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://db:5432/${DB_NAME}
+      KC_DB_USERNAME: ${DB_KC_USER}
+      KC_DB_PASSWORD: ${DB_KC_PASSWORD}
+      KC_DB_SCHEMA: ${DB_KC_SCHEMA}
+
+      # Hostname and HTTP settings
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_STRICT: false
+      KC_HTTP_ENABLED: true
+
+      # Logging/Metrics
+      KC_LOG_LEVEL: info
+      KC_METRICS_ENABLED: true
+      KC_HEALTH_ENABLED: true
+
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - shortener-backend
+
+    healthcheck:
+      test: [ "CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000; echo -e 'GET /health/ready HTTP/1.1\r\nHost: localhost:9000\r\nConnection: close\r\n\r\n' >&3; grep 'HTTP/1.1 200 OK' <&3" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 
   # --- OpenTelemetry Collector ---
   otel-collector:

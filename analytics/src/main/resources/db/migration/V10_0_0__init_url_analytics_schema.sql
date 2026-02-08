@@ -1,5 +1,4 @@
 
-CREATE SCHEMA IF NOT EXISTS url_analytics;
 
 CREATE TABLE url_analytics.url_events
 (
