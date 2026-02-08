@@ -32,8 +32,10 @@ class UrlRedirectControllerIT {
 
   @Container
   @ServiceConnection
-  static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-      DockerImageName.parse("postgres:17"));
+  static PostgreSQLContainer<?> postgres =
+      new PostgreSQLContainer<>(DockerImageName.parse("postgres:17"))
+          .withDatabaseName("shortener_db")
+          .withInitScript("db/init-db.sql");
 
   @Autowired
   private WebTestClient webTestClient;

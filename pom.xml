@@ -256,8 +256,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <artifactId>postgresql</artifactId>
       <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-postgresql</artifactId>
+      <version>2.0.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -289,6 +290,9 @@
     <skipUnitTests>false</skipUnitTests>
     <skipIntegrationTests>false</skipIntegrationTests>
     <jacoco.version>0.8.12</jacoco.version>
+
+    <surefire.jacoco.args></surefire.jacoco.args>
+    <failsafe.jacoco.args></failsafe.jacoco.args>
   </properties>
 
   <version>0.0.1-SNAPSHOT</version>
