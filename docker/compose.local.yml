@@ -1,4 +1,4 @@
-# Used when running Spring app locally
+
 services:
   db:
     image: 'postgres:17'
@@ -8,16 +8,17 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_USER: ${DB_USER:-devuser}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-devpass}
-      POSTGRES_DB: ${DB_NAME:-shortener_dev}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_ADMIN_USER}
+      POSTGRES_PASSWORD: ${DB_ADMIN_PASSWORD}
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
     volumes:
+      - ./db/init:/docker-entrypoint-initdb.d
       - pg-data-local:/var/lib/postgresql/data/pgdata
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-devuser} -d ${DB_NAME:-shortener_dev}" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_ADMIN_USER} -d ${DB_NAME}" ]
       interval: 10s
       timeout: 5s
       retries: 5
