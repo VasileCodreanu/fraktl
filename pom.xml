@@ -9,6 +9,7 @@
     <module>url-manager</module>
     <module>common</module>
     <module>analytics</module>
+    <module>user-management</module>
   </modules>
 
 

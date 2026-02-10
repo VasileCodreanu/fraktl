@@ -14,6 +14,7 @@ COPY ../pom.xml ./
 COPY common ./common
 COPY url-manager ./url-manager
 COPY analytics ./analytics
+COPY user-management ./user-management
 
 RUN mvn dependency:go-offline -B
 

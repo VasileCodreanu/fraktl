@@ -81,9 +81,10 @@ GRANT CONNECT ON DATABASE shortener_db TO keycloak_user;
 -- =============================================================================
 -- STEP 4: CREATE SCHEMAS WITH OWNERS
 -- =============================================================================
-CREATE SCHEMA IF NOT EXISTS url_management AUTHORIZATION app_user;
-CREATE SCHEMA IF NOT EXISTS url_analytics  AUTHORIZATION app_user;
-CREATE SCHEMA IF NOT EXISTS keycloak       AUTHORIZATION keycloak_user;
+CREATE SCHEMA IF NOT EXISTS url_management  AUTHORIZATION app_user;
+CREATE SCHEMA IF NOT EXISTS user_management AUTHORIZATION app_user;
+CREATE SCHEMA IF NOT EXISTS url_analytics   AUTHORIZATION app_user;
+CREATE SCHEMA IF NOT EXISTS keycloak        AUTHORIZATION keycloak_user;
 
 -- =============================================================================
 -- STEP 5: REVOKE ALL DEFAULT PERMISSIONS (DO THIS FIRST!)
@@ -98,12 +99,14 @@ REVOKE ALL ON ALL FUNCTIONS IN SCHEMA public FROM PUBLIC;
 
 -- Revoke PUBLIC access from all application schemas (CRITICAL!)
 REVOKE ALL ON SCHEMA url_management FROM PUBLIC;
+REVOKE ALL ON SCHEMA user_management FROM PUBLIC;
 REVOKE ALL ON SCHEMA url_analytics FROM PUBLIC;
 REVOKE ALL ON SCHEMA keycloak FROM PUBLIC;
 
 -- Revoke cross-schema access at SCHEMA level
 REVOKE ALL ON SCHEMA keycloak FROM app_user;
 REVOKE ALL ON SCHEMA url_management FROM keycloak_user;
+REVOKE ALL ON SCHEMA user_management FROM keycloak_user;
 REVOKE ALL ON SCHEMA url_analytics FROM keycloak_user;
 
 -- Revoke cross-schema access at OBJECT level (tables, sequences, functions)
@@ -122,6 +125,13 @@ REVOKE ALL ON ALL TABLES IN SCHEMA url_management FROM keycloak_user;
 REVOKE ALL ON ALL SEQUENCES IN SCHEMA url_management FROM keycloak_user;
 REVOKE ALL ON ALL FUNCTIONS IN SCHEMA url_management FROM keycloak_user;
 
+REVOKE ALL ON ALL TABLES IN SCHEMA user_management FROM PUBLIC;
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA user_management FROM PUBLIC;
+REVOKE ALL ON ALL FUNCTIONS IN SCHEMA user_management FROM PUBLIC;
+REVOKE ALL ON ALL TABLES IN SCHEMA user_management FROM keycloak_user;
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA user_management FROM keycloak_user;
+REVOKE ALL ON ALL FUNCTIONS IN SCHEMA user_management FROM keycloak_user;
+
 REVOKE ALL ON ALL TABLES IN SCHEMA url_analytics FROM PUBLIC;
 REVOKE ALL ON ALL SEQUENCES IN SCHEMA url_analytics FROM PUBLIC;
 REVOKE ALL ON ALL FUNCTIONS IN SCHEMA url_analytics FROM PUBLIC;
@@ -138,10 +148,17 @@ GRANT USAGE ON SCHEMA public TO app_user, keycloak_user;
 
 -- app_user: Full access to owned schemas
 GRANT ALL PRIVILEGES ON SCHEMA url_management TO app_user;
+GRANT ALL PRIVILEGES ON SCHEMA user_management TO app_user;
 GRANT ALL PRIVILEGES ON SCHEMA url_analytics TO app_user;
+
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA url_management TO app_user;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA url_management TO app_user;
 GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA url_management TO app_user;
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA user_management TO app_user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA user_management TO app_user;
+GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA user_management TO app_user;
+
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA url_analytics TO app_user;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA url_analytics TO app_user;
 GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA url_analytics TO app_user;
@@ -155,7 +172,7 @@ GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA keycloak TO keycloak_user;
 -- =============================================================================
 -- STEP 7: SET SEARCH PATHS
 -- =============================================================================
-ALTER USER app_user SET search_path TO url_management, url_analytics, public;
+ALTER USER app_user SET search_path TO url_management, user_management, url_analytics, public;
 ALTER USER keycloak_user SET search_path TO keycloak, public;
 
 -- =============================================================================
@@ -166,6 +183,10 @@ ALTER USER keycloak_user SET search_path TO keycloak, public;
 ALTER DEFAULT PRIVILEGES IN SCHEMA url_management REVOKE ALL ON TABLES FROM PUBLIC;
 ALTER DEFAULT PRIVILEGES IN SCHEMA url_management REVOKE ALL ON SEQUENCES FROM PUBLIC;
 ALTER DEFAULT PRIVILEGES IN SCHEMA url_management REVOKE ALL ON FUNCTIONS FROM PUBLIC;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA user_management REVOKE ALL ON TABLES FROM PUBLIC;
+ALTER DEFAULT PRIVILEGES IN SCHEMA user_management REVOKE ALL ON SEQUENCES FROM PUBLIC;
+ALTER DEFAULT PRIVILEGES IN SCHEMA user_management REVOKE ALL ON FUNCTIONS FROM PUBLIC;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA url_analytics REVOKE ALL ON TABLES FROM PUBLIC;
 ALTER DEFAULT PRIVILEGES IN SCHEMA url_analytics REVOKE ALL ON SEQUENCES FROM PUBLIC;
@@ -181,6 +202,13 @@ ALTER DEFAULT PRIVILEGES FOR ROLE app_user IN SCHEMA url_management
 ALTER DEFAULT PRIVILEGES FOR ROLE app_user IN SCHEMA url_management
     GRANT ALL ON SEQUENCES TO app_user;
 ALTER DEFAULT PRIVILEGES FOR ROLE app_user IN SCHEMA url_management
+    GRANT ALL ON FUNCTIONS TO app_user;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE app_user IN SCHEMA user_management
+    GRANT ALL ON TABLES TO app_user;
+ALTER DEFAULT PRIVILEGES FOR ROLE app_user IN SCHEMA user_management
+    GRANT ALL ON SEQUENCES TO app_user;
+ALTER DEFAULT PRIVILEGES FOR ROLE app_user IN SCHEMA user_management
     GRANT ALL ON FUNCTIONS TO app_user;
 
 ALTER DEFAULT PRIVILEGES FOR ROLE app_user IN SCHEMA url_analytics
@@ -204,6 +232,13 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA url_management
 ALTER DEFAULT PRIVILEGES IN SCHEMA url_management
     GRANT ALL ON SEQUENCES TO app_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA url_management
+    GRANT ALL ON FUNCTIONS TO app_user;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA user_management
+    GRANT ALL ON TABLES TO app_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA user_management
+    GRANT ALL ON SEQUENCES TO app_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA user_management
     GRANT ALL ON FUNCTIONS TO app_user;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA url_analytics
@@ -252,7 +287,7 @@ SELECT
     nspname as schema_name,
     nspowner::regrole as owner
 FROM pg_namespace
-WHERE nspname IN ('url_management', 'url_analytics', 'keycloak')
+WHERE nspname IN ('url_management', 'user_management', 'url_analytics', 'keycloak')
 ORDER BY nspname;
 
 \echo ''
@@ -262,7 +297,7 @@ SELECT
     has_schema_privilege('app_user', nspname, 'USAGE') as has_usage,
     has_schema_privilege('app_user', nspname, 'CREATE') as has_create
 FROM pg_namespace
-WHERE nspname IN ('url_management', 'url_analytics', 'keycloak')
+WHERE nspname IN ('url_management', 'user_management', 'url_analytics', 'keycloak')
 ORDER BY nspname;
 
 \echo ''
@@ -272,7 +307,7 @@ SELECT
     has_schema_privilege('keycloak_user', nspname, 'USAGE') as has_usage,
     has_schema_privilege('keycloak_user', nspname, 'CREATE') as has_create
 FROM pg_namespace
-WHERE nspname IN ('url_management', 'url_analytics', 'keycloak')
+WHERE nspname IN ('url_management', 'user_management', 'url_analytics', 'keycloak')
 ORDER BY nspname;
 
 \echo ''

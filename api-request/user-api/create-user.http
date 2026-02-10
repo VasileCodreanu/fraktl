@@ -1,0 +1,11 @@
+
+###
+
+POST http://localhost:8090/api/v1/user
+Content-Type: application/json
+
+{
+  "userName": "some userName"
+}
+
+###
