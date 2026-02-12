@@ -270,7 +270,7 @@
   </dependencies>
 
   <description>URL Shortener</description>
-  <groupId>org.java</groupId>
+  <groupId>com.fraktl</groupId>
   <modelVersion>4.0.0</modelVersion>
   <name>fraktl</name>
 
