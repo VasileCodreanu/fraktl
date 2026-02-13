@@ -1,4 +1,4 @@
-package com.fraktl.usermanagement.service;
+package com.fraktl.urlmanagement.service;
 
 import static com.fraktl.urlmanagement.service.impl.helpers.UrlConstants.BASE_URL;
 import static com.fraktl.urlmanagement.service.impl.helpers.UrlConstants.CHAR_SET;

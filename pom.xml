@@ -10,6 +10,8 @@
     <module>common</module>
     <module>analytics</module>
     <module>user-management</module>
+    <module>security</module>
+    <module>application</module>
   </modules>
 
 
@@ -218,6 +220,10 @@
       <artifactId>spring-boot-starter-web</artifactId>
       <groupId>org.springframework.boot</groupId>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+    </dependency>
 
     <dependency>
       <artifactId>flyway-core</artifactId>
@@ -235,6 +241,7 @@
       <artifactId>spring-boot-starter-data-jpa</artifactId>
       <groupId>org.springframework.boot</groupId>
     </dependency>
+
     <dependency>
       <artifactId>lombok</artifactId>
       <groupId>org.projectlombok</groupId>

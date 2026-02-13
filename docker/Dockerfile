@@ -15,6 +15,8 @@ COPY common ./common
 COPY url-manager ./url-manager
 COPY analytics ./analytics
 COPY user-management ./user-management
+COPY security ./security
+COPY application ./application
 
 RUN mvn dependency:go-offline -B
 
@@ -26,7 +28,7 @@ RUN mvn clean package -DskipTests
 FROM gcr.io/distroless/java21-debian12
 
 COPY --from=build /app/opentelemetry-javaagent.jar ./opentelemetry-javaagent.jar
-COPY --from=build /app/url-manager/target/*.jar ./app.jar
+COPY --from=build /app/application/target/*.jar ./app.jar
 
 USER nonroot
 

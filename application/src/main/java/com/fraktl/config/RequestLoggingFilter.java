@@ -1,4 +1,4 @@
-package com.fraktl.urlmanagement.config;
+package com.fraktl.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;

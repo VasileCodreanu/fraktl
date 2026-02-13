@@ -1,23 +1,31 @@
-package com.fraktl.usermanagement.integration.controller;
+package com.fraktl.urlmanagement.integration.controller;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fraktl.common.api.ApiResponse;
 import com.fraktl.common.api.ApiResponse.ResponseStatus;
+import com.fraktl.common.event.UrlEventMessage;
+import com.fraktl.common.ports.out.AnalyticsEventPublisherPort;
+import com.fraktl.urlmanagement.UrlManagerTestApplication;
 import com.fraktl.urlmanagement.dto.ShortUrlResponse;
 import com.fraktl.urlmanagement.dto.ShortenUrlRequest;
 
+import com.fraktl.urlmanagement.integration.controller.config.TestSecurityConfig;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -26,8 +34,13 @@ import org.testcontainers.utility.DockerImageName;
 
 @Tag("integration")
 @AutoConfigureWebTestClient(timeout = "PT5M")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
+@SpringBootTest(
+    classes = {
+        UrlManagerTestApplication.class,
+        TestSecurityConfig.class
+    },
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UrlRedirectControllerIT {
 
   @Container
@@ -37,11 +50,19 @@ class UrlRedirectControllerIT {
           .withDatabaseName("shortener_db")
           .withInitScript("db/init-db.sql");
 
+  @MockitoBean
+  private AnalyticsEventPublisherPort analyticsEventPublisherPort;
+
   @Autowired
   private WebTestClient webTestClient;
 
   @Autowired
   private ObjectMapper objectMapper;
+
+  @BeforeEach
+  void setUp() {
+    Mockito.doNothing().when(analyticsEventPublisherPort).publishUrlEvent(any(UrlEventMessage.class));
+  }
 
   @Test
   void shouldRedirectToOriginalUrl() throws JsonProcessingException {
