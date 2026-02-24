@@ -3,7 +3,11 @@
 ### 🚀 Features
 
 - Shorten long URLs into compact short links
-- Redirect from short links to original URLs
+- Redirect short links to original URLs
+- JWT-based authentication (Keycloak)
+- Database versioning with Flyway
+- Fully Dockerized local/stage environment
+- Automated Keycloak realm configuration
 
 ### 🛠 Tech Stack
 
@@ -14,17 +18,36 @@
   (Web, Validation, Data)
 - **Postgres**
 - **Flyway (DB migrations)**
-- **Docker**
+- **Keycloak (OAuth2 / OpenID Connect)**
+- **Docker & Docker Compose**
+
+### 🔐 Authentication & Authorization
+
+The application uses Keycloak as an OAuth2 Authorization Server.
+- JWT tokens are issued by Keycloak
+- Protected endpoints require a valid Bearer token
+- Realm configuration is automatically imported during container startup
+- No manual Keycloak setup required
+
+#### Token Flow
+1. Client requests access token from Keycloak
+2. Keycloak validates credentials
+3. Keycloak issues signed JWT
+4. Client calls protected API with: Authorization: Bearer <access_token>
+
+---
 
 ### ⚙️ Running the Application Locally
 
 #### 1. Prerequisites
 
-- Ensure Docker is installed and running on your machine.
-- Rename the provided file `env.properties.example` to `env.properties`, and configure the
-  environment variables according to your system setup.
-- Rename the provided file `.env.example` to `.env`, and configure the environment variables for
-  docker according to your system setup.
+### 1️⃣ Prerequisites
+
+- Docker installed and running
+- Rename:
+  - `env.properties.example` → `env.properties`
+  - `.env.example` → `.env`
+- Configure environment variables according to your system(if needed)
 
 #### 2. Start service
 

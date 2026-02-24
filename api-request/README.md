@@ -1,35 +1,64 @@
 # 📘 URL Shortener API - Usage Guide
 
-This API allows you to shorten long URLs, expand shortened URLs, and test redirections.
+This guide explains how to interact with the protected API endpoints using IntelliJ HTTP Client.
+
+The application uses JWT-based authentication via Keycloak.
+
+---
+
+## 🔐 Authentication (Required First)
+
+All protected endpoints require a valid Bearer token.
+
+Before calling any API:
+1. Open `auth.http`
+2. Run the request to retrieve an access token
+3. The token will be automatically stored as a global variable: `{{auth_token}}`
+
+The token is retrieved from: http://localhost:8080/realms/fraktl/protocol/openid-connect/token
+
+Once retrieved, all other requests will automatically include: **Authorization: Bearer {{auth_token}}**
+
+---
 
 ## 🔧 How to Use
 
-### 1. Create-short-url
+### 1️⃣ Create Short URL (Protected)
 
-Use the `create-short-url.http` file to send a request that converts a long URL into a shortened one.
+Use the `create-short-url.http` file to generate a shortened URL.
 
-- Open the file: `create-short-url.http`
-- Send the request to generate a short URL.
-- You’ll receive a response with a 'shortUrl' version of the 'originalUrl'.
-
----
-
-### 2. Get-url-details-by-short-code
-
-Use the `get-url-details-by-short-code.http` file to retrieve the original long URL from a short url.
-
-- Open the file: `get-url-details-by-short-code.http`
-- Modify the request by supplying the 'shortUrl' as a parameter.
-- Send the request to receive the corresponding long URL.
+Steps:
+- Ensure you have executed `auth.http`
+- Open `create-short-url.http`
+- Send the request
 
 ---
 
-### 3. Test Redirection
+---
+
+### 2. Get URL Details by Short Code (Protected)
+
+Use `get-url-details-by-short-code.http` file.
+
+Steps:
+- Ensure auth.http was executed
+- Replace the short code in the request(by supplying the 'shortUrl' as a parameter)
+- Send the request
+
+---
+
+### 3. Test Redirection (This endpoint does NOT require authentication)
 
 Use the `redirect.http` file to test the redirection functionality directly in your browser.
 
 - Open the file: `redirect.http`
-- Copy the redirect URL into your browser’s address bar.
+- Copy the redirect URL.
+- Paste it into your browser
 - Observe if it redirects you to the original long URL.
 
 ---
+## 🧠 Important Notes
+
+- Access tokens expire (default Keycloak behavior - 300s)
+- If you receive 401 Unauthorized, re-run auth.http
+- Token is stored globally across HTTP files in IntelliJ
