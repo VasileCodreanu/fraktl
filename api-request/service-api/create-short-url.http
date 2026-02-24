@@ -1,11 +1,11 @@
 
-###
+### Protected resource - requires Bearer JWT token
 
-POST http://localhost:8090/api/v1/short-urls
+### Call API
+POST http://localhost:8090/api/v1/short-urls HTTP/1.1
+Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 {
   "originalUrl": "https://medium.com/@sandeep4.verma/system-design-scalable-url-shortener-service-like-tinyurl-106f30f23a82"
 }
-
-###

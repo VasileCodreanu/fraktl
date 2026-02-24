@@ -29,7 +29,7 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:26.5.2
     container_name: keycloak
-    command: start-dev
+    command: start-dev --import-realm
     environment:
       # Admin user
       KC_BOOTSTRAP_ADMIN_USERNAME: ${DB_KC_ADMIN_USER}
@@ -52,6 +52,9 @@ services:
       KC_METRICS_ENABLED: true
       KC_HEALTH_ENABLED: true
 
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+      - ./keycloak:/opt/keycloak/data/import
     ports:
       - "127.0.0.1:8080:8080"
     depends_on:
@@ -68,6 +71,8 @@ services:
       start_period: 60s
 
 volumes:
+  keycloak_data:
+    driver: local
   pg-data-local:
     driver: local
 

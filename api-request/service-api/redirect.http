@@ -1,6 +1,6 @@
 
 ###
 
-GET http://localhost:8090/hBxM5A5
+GET http://localhost:8090/r/hBxM5A5 HTTP/1.1
 
 ###

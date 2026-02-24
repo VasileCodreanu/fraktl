@@ -1,16 +1,7 @@
 
 ### Protected resource - requires Bearer JWT token
 
-### Authorization by token. Retrieve and save token.
-POST https://examples.http-client.intellij.net/body-echo
-Content-Type: application/json
-
-{
-  "token": "token-here"
-}
-
-> {% client.global.set("auth_token", response.body.token); %}
-
-### Authorization by token. Use token to authorize.
+### Call API
 GET http://localhost:8090/api/v1/short-urls/hBxM5A5 HTTP/1.1
 Authorization: Bearer {{auth_token}}
+

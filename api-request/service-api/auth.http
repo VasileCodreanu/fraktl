@@ -1,0 +1,12 @@
+
+### Get token(Authorization by token. Retrieve and save token)
+POST http://localhost:8080/realms/fraktl/protocol/openid-connect/token HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
+
+client_id=spring-app&
+client_secret=ulVoy9UZVVUmGh8G923ZDrbD61ZvEEMQ&
+grant_type=password&
+username=user&
+password=user
+
+> {% client.global.set("auth_token", response.body.access_token); %}

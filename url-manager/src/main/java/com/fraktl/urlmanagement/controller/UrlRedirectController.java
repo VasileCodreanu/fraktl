@@ -27,7 +27,7 @@ public class UrlRedirectController {
   private final UrlMappingService urlMappingService;
   private final AnalyticsEventPublisherPort analyticsEventPublisher;
 
-  @GetMapping(value = "/{shortCode}", produces = APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/r/{shortCode}", produces = APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> redirect(
       @NotBlank @Size(min = 7, max = 7) @PathVariable("shortCode") String shortCode,
       HttpServletRequest request) {

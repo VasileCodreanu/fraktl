@@ -6,6 +6,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -19,8 +20,8 @@ public class SecurityConfig {
 
     http.authorizeHttpRequests(authorizeRequests ->
         authorizeRequests
-            .requestMatchers(HttpMethod.GET, "/*").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/v1/short-urls/**").permitAll()
+            .requestMatchers(HttpMethod.GET, "/r/*").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/v1/short-urls/*").permitAll()
             .anyRequest().authenticated());
 
     http.oauth2ResourceServer(oauth2 ->
@@ -28,6 +29,8 @@ public class SecurityConfig {
 
     http.sessionManagement(sessionManagement ->
         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+    http.csrf(AbstractHttpConfigurer::disable);
 
     return http.build();
   }
